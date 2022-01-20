@@ -489,19 +489,19 @@ size_t retro_get_memory_size(unsigned id)
     return 0;
 }
 
-bool set_eject_state(bool ejected) {
+bool set_drive_eject_state(unsigned drive,bool ejected) {
   if (ejected || cur_disk_idx >= cur_disk_num) {
-    fddfile_eject(0);
+    fddfile_eject(drive);
   } else {
-    diskdrv_setfdd(0, images[cur_disk_idx], 0);
+    diskdrv_setfdd(drive, images[cur_disk_idx], 0);
   }
   return 1;
 }
 
 /* TODO: support FDD 1. */
 
-bool get_eject_state (void) {
-  return !fddfile_diskready(0);
+bool get_drive_eject_state (unsigned drive) {
+  return !fddfile_diskready(drive);
 }
 
 unsigned get_image_index (void) {
@@ -515,6 +515,10 @@ bool set_image_index(unsigned index) {
 
 unsigned get_num_images(void) {
     return cur_disk_num;
+}
+
+unsigned get_num_drives(void) {
+    return 4;
 }
 
 bool replace_image_index(unsigned index,
@@ -532,10 +536,11 @@ bool add_image_index(void) {
   return 1;
 }
 
-struct retro_disk_control_callback disk_controller =
+struct retro_disk_control_ext2_callback disk_controller =
   {
-   .set_eject_state = set_eject_state,
-   .get_eject_state = get_eject_state,
+   .set_drive_eject_state = set_drive_eject_state,
+   .get_drive_eject_state = get_drive_eject_state,
+   .get_num_drives = get_num_drives,
    .get_image_index = get_image_index,
    .set_image_index = set_image_index,
    .get_num_images = get_num_images,
@@ -603,7 +608,7 @@ void retro_init(void)
     struct retro_keyboard_callback cbk = { keyboard_cb };
     environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cbk);
 */
-	environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &disk_controller);
+	environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT2_INTERFACE, &disk_controller);
   	update_variables();
 
     memset(Core_Key_Sate,0,512);
