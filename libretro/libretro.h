@@ -1742,7 +1742,7 @@ enum retro_mod
                                             * the frontend is attempting to call retro_run().
                                             */
 
-#define RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT2_INTERFACE 72
+#define RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT2_INTERFACE (RETRO_ENVIRONMENT_EXPERIMENTAL|0x9876)
                                            /* const struct retro_disk_control_ext2_callback * --
                                             * Sets an interface which frontend can use to eject and insert
                                             * disk images, and also obtain information about individual
