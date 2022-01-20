@@ -278,6 +278,11 @@ enum retro_language
    RETRO_LANGUAGE_ARABIC              = 16,
    RETRO_LANGUAGE_GREEK               = 17,
    RETRO_LANGUAGE_TURKISH             = 18,
+   RETRO_LANGUAGE_SLOVAK              = 19,
+   RETRO_LANGUAGE_PERSIAN             = 20,
+   RETRO_LANGUAGE_HEBREW              = 21,
+   RETRO_LANGUAGE_ASTURIAN            = 22,
+   RETRO_LANGUAGE_FINNISH             = 23,
    RETRO_LANGUAGE_LAST,
 
    /* Ensure sizeof(enum) == sizeof(int) */
@@ -1279,6 +1284,466 @@ enum retro_mod
 
 #define RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE 58
                                            /* const struct retro_disk_control_ext_callback * --
+                                            * Sets an interface which frontend can use to eject and insert
+                                            * disk images, and also obtain information about individual
+                                            * disk image files registered by the core.
+                                            * This is used for games which consist of multiple images and
+                                            * must be manually swapped out by the user (e.g. PSX, floppy disk
+                                            * based systems).
+                                            */
+
+#define RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION 59
+                                           /* unsigned * --
+                                            * Unsigned value is the API version number of the message
+                                            * interface supported by the frontend. If callback returns
+                                            * false, API version is assumed to be 0.
+                                            *
+                                            * In legacy code, messages may be displayed in an
+                                            * implementation-specific manner by passing a struct
+                                            * of type retro_message to RETRO_ENVIRONMENT_SET_MESSAGE.
+                                            * This may be still be done regardless of the message
+                                            * interface version.
+                                            *
+                                            * If version is >= 1 however, messages may instead be
+                                            * displayed by passing a struct of type retro_message_ext
+                                            * to RETRO_ENVIRONMENT_SET_MESSAGE_EXT. This allows the
+                                            * core to specify message logging level, priority and
+                                            * destination (OSD, logging interface or both).
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_MESSAGE_EXT 60
+                                           /* const struct retro_message_ext * --
+                                            * Sets a message to be displayed in an implementation-specific
+                                            * manner for a certain amount of 'frames'. Additionally allows
+                                            * the core to specify message logging level, priority and
+                                            * destination (OSD, logging interface or both).
+                                            * Should not be used for trivial messages, which should simply be
+                                            * logged via RETRO_ENVIRONMENT_GET_LOG_INTERFACE (or as a
+                                            * fallback, stderr).
+                                            */
+
+#define RETRO_ENVIRONMENT_GET_INPUT_MAX_USERS 61
+                                           /* unsigned * --
+                                            * Unsigned value is the number of active input devices
+                                            * provided by the frontend. This may change between
+                                            * frames, but will remain constant for the duration
+                                            * of each frame.
+                                            * If callback returns true, a core need not poll any
+                                            * input device with an index greater than or equal to
+                                            * the number of active devices.
+                                            * If callback returns false, the number of active input
+                                            * devices is unknown. In this case, all input devices
+                                            * should be considered active.
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK 62
+                                           /* const struct retro_audio_buffer_status_callback * --
+                                            * Lets the core know the occupancy level of the frontend
+                                            * audio buffer. Can be used by a core to attempt frame
+                                            * skipping in order to avoid buffer under-runs.
+                                            * A core may pass NULL to disable buffer status reporting
+                                            * in the frontend.
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY 63
+                                           /* const unsigned * --
+                                            * Sets minimum frontend audio latency in milliseconds.
+                                            * Resultant audio latency may be larger than set value,
+                                            * or smaller if a hardware limit is encountered. A frontend
+                                            * is expected to honour requests up to 512 ms.
+                                            *
+                                            * - If value is less than current frontend
+                                            *   audio latency, callback has no effect
+                                            * - If value is zero, default frontend audio
+                                            *   latency is set
+                                            *
+                                            * May be used by a core to increase audio latency and
+                                            * therefore decrease the probability of buffer under-runs
+                                            * (crackling) when performing 'intensive' operations.
+                                            * A core utilising RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK
+                                            * to implement audio-buffer-based frame skipping may achieve
+                                            * optimal results by setting the audio latency to a 'high'
+                                            * (typically 6x or 8x) integer multiple of the expected
+                                            * frame time.
+                                            *
+                                            * WARNING: This can only be called from within retro_run().
+                                            * Calling this can require a full reinitialization of audio
+                                            * drivers in the frontend, so it is important to call it very
+                                            * sparingly, and usually only with the users explicit consent.
+                                            * An eventual driver reinitialize will happen so that audio
+                                            * callbacks happening after this call within the same retro_run()
+                                            * call will target the newly initialized driver.
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_FASTFORWARDING_OVERRIDE 64
+                                           /* const struct retro_fastforwarding_override * --
+                                            * Used by a libretro core to override the current
+                                            * fastforwarding mode of the frontend.
+                                            * If NULL is passed to this function, the frontend
+                                            * will return true if fastforwarding override
+                                            * functionality is supported (no change in
+                                            * fastforwarding state will occur in this case).
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE 65
+                                           /* const struct retro_system_content_info_override * --
+                                            * Allows an implementation to override 'global' content
+                                            * info parameters reported by retro_get_system_info().
+                                            * Overrides also affect subsystem content info parameters
+                                            * set via RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO.
+                                            * This function must be called inside retro_set_environment().
+                                            * If callback returns false, content info overrides
+                                            * are unsupported by the frontend, and will be ignored.
+                                            * If callback returns true, extended game info may be
+                                            * retrieved by calling RETRO_ENVIRONMENT_GET_GAME_INFO_EXT
+                                            * in retro_load_game() or retro_load_game_special().
+                                            *
+                                            * 'data' points to an array of retro_system_content_info_override
+                                            * structs terminated by a { NULL, false, false } element.
+                                            * If 'data' is NULL, no changes will be made to the frontend;
+                                            * a core may therefore pass NULL in order to test whether
+                                            * the RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE and
+                                            * RETRO_ENVIRONMENT_GET_GAME_INFO_EXT callbacks are supported
+                                            * by the frontend.
+                                            *
+                                            * For struct member descriptions, see the definition of
+                                            * struct retro_system_content_info_override.
+                                            *
+                                            * Example:
+                                            *
+                                            * - struct retro_system_info:
+                                            * {
+                                            *    "My Core",                      // library_name
+                                            *    "v1.0",                         // library_version
+                                            *    "m3u|md|cue|iso|chd|sms|gg|sg", // valid_extensions
+                                            *    true,                           // need_fullpath
+                                            *    false                           // block_extract
+                                            * }
+                                            *
+                                            * - Array of struct retro_system_content_info_override:
+                                            * {
+                                            *    {
+                                            *       "md|sms|gg", // extensions
+                                            *       false,       // need_fullpath
+                                            *       true         // persistent_data
+                                            *    },
+                                            *    {
+                                            *       "sg",        // extensions
+                                            *       false,       // need_fullpath
+                                            *       false        // persistent_data
+                                            *    },
+                                            *    { NULL, false, false }
+                                            * }
+                                            *
+                                            * Result:
+                                            * - Files of type m3u, cue, iso, chd will not be
+                                            *   loaded by the frontend. Frontend will pass a
+                                            *   valid path to the core, and core will handle
+                                            *   loading internally
+                                            * - Files of type md, sms, gg will be loaded by
+                                            *   the frontend. A valid memory buffer will be
+                                            *   passed to the core. This memory buffer will
+                                            *   remain valid until retro_deinit() returns
+                                            * - Files of type sg will be loaded by the frontend.
+                                            *   A valid memory buffer will be passed to the core.
+                                            *   This memory buffer will remain valid until
+                                            *   retro_load_game() (or retro_load_game_special())
+                                            *   returns
+                                            *
+                                            * NOTE: If an extension is listed multiple times in
+                                            * an array of retro_system_content_info_override
+                                            * structs, only the first instance will be registered
+                                            */
+
+#define RETRO_ENVIRONMENT_GET_GAME_INFO_EXT 66
+                                           /* const struct retro_game_info_ext ** --
+                                            * Allows an implementation to fetch extended game
+                                            * information, providing additional content path
+                                            * and memory buffer status details.
+                                            * This function may only be called inside
+                                            * retro_load_game() or retro_load_game_special().
+                                            * If callback returns false, extended game information
+                                            * is unsupported by the frontend. In this case, only
+                                            * regular retro_game_info will be available.
+                                            * RETRO_ENVIRONMENT_GET_GAME_INFO_EXT is guaranteed
+                                            * to return true if RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE
+                                            * returns true.
+                                            *
+                                            * 'data' points to an array of retro_game_info_ext structs.
+                                            *
+                                            * For struct member descriptions, see the definition of
+                                            * struct retro_game_info_ext.
+                                            *
+                                            * - If function is called inside retro_load_game(),
+                                            *   the retro_game_info_ext array is guaranteed to
+                                            *   have a size of 1 - i.e. the returned pointer may
+                                            *   be used to access directly the members of the
+                                            *   first retro_game_info_ext struct, for example:
+                                            *
+                                            *      struct retro_game_info_ext *game_info_ext;
+                                            *      if (environ_cb(RETRO_ENVIRONMENT_GET_GAME_INFO_EXT, &game_info_ext))
+                                            *         printf("Content Directory: %s\n", game_info_ext->dir);
+                                            *
+                                            * - If the function is called inside retro_load_game_special(),
+                                            *   the retro_game_info_ext array is guaranteed to have a
+                                            *   size equal to the num_info argument passed to
+                                            *   retro_load_game_special()
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2 67
+                                           /* const struct retro_core_options_v2 * --
+                                            * Allows an implementation to signal the environment
+                                            * which variables it might want to check for later using
+                                            * GET_VARIABLE.
+                                            * This allows the frontend to present these variables to
+                                            * a user dynamically.
+                                            * This should only be called if RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION
+                                            * returns an API version of >= 2.
+                                            * This should be called instead of RETRO_ENVIRONMENT_SET_VARIABLES.
+                                            * This should be called instead of RETRO_ENVIRONMENT_SET_CORE_OPTIONS.
+                                            * This should be called the first time as early as
+                                            * possible (ideally in retro_set_environment).
+                                            * Afterwards it may be called again for the core to communicate
+                                            * updated options to the frontend, but the number of core
+                                            * options must not change from the number in the initial call.
+                                            * If RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION returns an API
+                                            * version of >= 2, this callback is guaranteed to succeed
+                                            * (i.e. callback return value does not indicate success)
+                                            * If callback returns true, frontend has core option category
+                                            * support.
+                                            * If callback returns false, frontend does not have core option
+                                            * category support.
+                                            *
+                                            * 'data' points to a retro_core_options_v2 struct, containing
+                                            * of two pointers:
+                                            * - retro_core_options_v2::categories is an array of
+                                            *   retro_core_option_v2_category structs terminated by a
+                                            *   { NULL, NULL, NULL } element. If retro_core_options_v2::categories
+                                            *   is NULL, all core options will have no category and will be shown
+                                            *   at the top level of the frontend core option interface. If frontend
+                                            *   does not have core option category support, categories array will
+                                            *   be ignored.
+                                            * - retro_core_options_v2::definitions is an array of
+                                            *   retro_core_option_v2_definition structs terminated by a
+                                            *   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL }
+                                            *   element.
+                                            *
+                                            * >> retro_core_option_v2_category notes:
+                                            *
+                                            * - retro_core_option_v2_category::key should contain string
+                                            *   that uniquely identifies the core option category. Valid
+                                            *   key characters are [a-z, A-Z, 0-9, _, -]
+                                            *   Namespace collisions with other implementations' category
+                                            *   keys are permitted.
+                                            * - retro_core_option_v2_category::desc should contain a human
+                                            *   readable description of the category key.
+                                            * - retro_core_option_v2_category::info should contain any
+                                            *   additional human readable information text that a typical
+                                            *   user may need to understand the nature of the core option
+                                            *   category.
+                                            *
+                                            * Example entry:
+                                            * {
+                                            *     "advanced_settings",
+                                            *     "Advanced",
+                                            *     "Options affecting low-level emulation performance and accuracy."
+                                            * }
+                                            *
+                                            * >> retro_core_option_v2_definition notes:
+                                            *
+                                            * - retro_core_option_v2_definition::key should be namespaced to not
+                                            *   collide with other implementations' keys. e.g. A core called
+                                            *   'foo' should use keys named as 'foo_option'. Valid key characters
+                                            *   are [a-z, A-Z, 0-9, _, -].
+                                            * - retro_core_option_v2_definition::desc should contain a human readable
+                                            *   description of the key. Will be used when the frontend does not
+                                            *   have core option category support. Examples: "Aspect Ratio" or
+                                            *   "Video > Aspect Ratio".
+                                            * - retro_core_option_v2_definition::desc_categorized should contain a
+                                            *   human readable description of the key, which will be used when
+                                            *   frontend has core option category support. Example: "Aspect Ratio",
+                                            *   where associated retro_core_option_v2_category::desc is "Video".
+                                            *   If empty or NULL, the string specified by
+                                            *   retro_core_option_v2_definition::desc will be used instead.
+                                            *   retro_core_option_v2_definition::desc_categorized will be ignored
+                                            *   if retro_core_option_v2_definition::category_key is empty or NULL.
+                                            * - retro_core_option_v2_definition::info should contain any additional
+                                            *   human readable information text that a typical user may need to
+                                            *   understand the functionality of the option.
+                                            * - retro_core_option_v2_definition::info_categorized should contain
+                                            *   any additional human readable information text that a typical user
+                                            *   may need to understand the functionality of the option, and will be
+                                            *   used when frontend has core option category support. This is provided
+                                            *   to accommodate the case where info text references an option by
+                                            *   name/desc, and the desc/desc_categorized text for that option differ.
+                                            *   If empty or NULL, the string specified by
+                                            *   retro_core_option_v2_definition::info will be used instead.
+                                            *   retro_core_option_v2_definition::info_categorized will be ignored
+                                            *   if retro_core_option_v2_definition::category_key is empty or NULL.
+                                            * - retro_core_option_v2_definition::category_key should contain a
+                                            *   category identifier (e.g. "video" or "audio") that will be
+                                            *   assigned to the core option if frontend has core option category
+                                            *   support. A categorized option will be shown in a subsection/
+                                            *   submenu of the frontend core option interface. If key is empty
+                                            *   or NULL, or if key does not match one of the
+                                            *   retro_core_option_v2_category::key values in the associated
+                                            *   retro_core_option_v2_category array, option will have no category
+                                            *   and will be shown at the top level of the frontend core option
+                                            *   interface.
+                                            * - retro_core_option_v2_definition::values is an array of
+                                            *   retro_core_option_value structs terminated by a { NULL, NULL }
+                                            *   element.
+                                            * --> retro_core_option_v2_definition::values[index].value is an
+                                            *     expected option value.
+                                            * --> retro_core_option_v2_definition::values[index].label is a
+                                            *     human readable label used when displaying the value on screen.
+                                            *     If NULL, the value itself is used.
+                                            * - retro_core_option_v2_definition::default_value is the default
+                                            *   core option setting. It must match one of the expected option
+                                            *   values in the retro_core_option_v2_definition::values array. If
+                                            *   it does not, or the default value is NULL, the first entry in the
+                                            *   retro_core_option_v2_definition::values array is treated as the
+                                            *   default.
+                                            *
+                                            * The number of possible option values should be very limited,
+                                            * and must be less than RETRO_NUM_CORE_OPTION_VALUES_MAX.
+                                            * i.e. it should be feasible to cycle through options
+                                            * without a keyboard.
+                                            *
+                                            * Example entries:
+                                            *
+                                            * - Uncategorized:
+                                            *
+                                            * {
+                                            *     "foo_option",
+                                            *     "Speed hack coprocessor X",
+                                            *     NULL,
+                                            *     "Provides increased performance at the expense of reduced accuracy.",
+                                            *     NULL,
+                                            *     NULL,
+                                            * 	  {
+                                            *         { "false",    NULL },
+                                            *         { "true",     NULL },
+                                            *         { "unstable", "Turbo (Unstable)" },
+                                            *         { NULL, NULL },
+                                            *     },
+                                            *     "false"
+                                            * }
+                                            *
+                                            * - Categorized:
+                                            *
+                                            * {
+                                            *     "foo_option",
+                                            *     "Advanced > Speed hack coprocessor X",
+                                            *     "Speed hack coprocessor X",
+                                            *     "Setting 'Advanced > Speed hack coprocessor X' to 'true' or 'Turbo' provides increased performance at the expense of reduced accuracy",
+                                            *     "Setting 'Speed hack coprocessor X' to 'true' or 'Turbo' provides increased performance at the expense of reduced accuracy",
+                                            *     "advanced_settings",
+                                            * 	  {
+                                            *         { "false",    NULL },
+                                            *         { "true",     NULL },
+                                            *         { "unstable", "Turbo (Unstable)" },
+                                            *         { NULL, NULL },
+                                            *     },
+                                            *     "false"
+                                            * }
+                                            *
+                                            * Only strings are operated on. The possible values will
+                                            * generally be displayed and stored as-is by the frontend.
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL 68
+                                           /* const struct retro_core_options_v2_intl * --
+                                            * Allows an implementation to signal the environment
+                                            * which variables it might want to check for later using
+                                            * GET_VARIABLE.
+                                            * This allows the frontend to present these variables to
+                                            * a user dynamically.
+                                            * This should only be called if RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION
+                                            * returns an API version of >= 2.
+                                            * This should be called instead of RETRO_ENVIRONMENT_SET_VARIABLES.
+                                            * This should be called instead of RETRO_ENVIRONMENT_SET_CORE_OPTIONS.
+                                            * This should be called instead of RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL.
+                                            * This should be called instead of RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2.
+                                            * This should be called the first time as early as
+                                            * possible (ideally in retro_set_environment).
+                                            * Afterwards it may be called again for the core to communicate
+                                            * updated options to the frontend, but the number of core
+                                            * options must not change from the number in the initial call.
+                                            * If RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION returns an API
+                                            * version of >= 2, this callback is guaranteed to succeed
+                                            * (i.e. callback return value does not indicate success)
+                                            * If callback returns true, frontend has core option category
+                                            * support.
+                                            * If callback returns false, frontend does not have core option
+                                            * category support.
+                                            *
+                                            * This is fundamentally the same as RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2,
+                                            * with the addition of localisation support. The description of the
+                                            * RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2 callback should be consulted
+                                            * for further details.
+                                            *
+                                            * 'data' points to a retro_core_options_v2_intl struct.
+                                            *
+                                            * - retro_core_options_v2_intl::us is a pointer to a
+                                            *   retro_core_options_v2 struct defining the US English
+                                            *   core options implementation. It must point to a valid struct.
+                                            *
+                                            * - retro_core_options_v2_intl::local is a pointer to a
+                                            *   retro_core_options_v2 struct defining core options for
+                                            *   the current frontend language. It may be NULL (in which case
+                                            *   retro_core_options_v2_intl::us is used by the frontend). Any items
+                                            *   missing from this struct will be read from
+                                            *   retro_core_options_v2_intl::us instead.
+                                            *
+                                            * NOTE: Default core option values are always taken from the
+                                            * retro_core_options_v2_intl::us struct. Any default values in
+                                            * the retro_core_options_v2_intl::local struct will be ignored.
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_UPDATE_DISPLAY_CALLBACK 69
+                                           /* const struct retro_core_options_update_display_callback * --
+                                            * Allows a frontend to signal that a core must update
+                                            * the visibility of any dynamically hidden core options,
+                                            * and enables the frontend to detect visibility changes.
+                                            * Used by the frontend to update the menu display status
+                                            * of core options without requiring a call of retro_run().
+                                            * Must be called in retro_set_environment().
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_VARIABLE 70
+                                           /* const struct retro_variable * --
+                                            * Allows an implementation to notify the frontend
+                                            * that a core option value has changed.
+                                            *
+                                            * retro_variable::key and retro_variable::value
+                                            * must match strings that have been set previously
+                                            * via one of the following:
+                                            *
+                                            * - RETRO_ENVIRONMENT_SET_VARIABLES
+                                            * - RETRO_ENVIRONMENT_SET_CORE_OPTIONS
+                                            * - RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL
+                                            * - RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2
+                                            * - RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL
+                                            *
+                                            * After changing a core option value via this
+                                            * callback, RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE
+                                            * will return true.
+                                            *
+                                            * If data is NULL, no changes will be registered
+                                            * and the callback will return true; an
+                                            * implementation may therefore pass NULL in order
+                                            * to test whether the callback is supported.
+                                            */
+
+#define RETRO_ENVIRONMENT_GET_THROTTLE_STATE (71 | RETRO_ENVIRONMENT_EXPERIMENTAL)
+                                           /* struct retro_throttle_state * --
+                                            * Allows an implementation to get details on the actual rate
+                                            * the frontend is attempting to call retro_run().
+                                            */
+
+#define RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT2_INTERFACE 72
+                                           /* const struct retro_disk_control_ext2_callback * --
                                             * Sets an interface which frontend can use to eject and insert
                                             * disk images, and also obtain information about individual
                                             * disk image files registered by the core.
@@ -2354,9 +2819,11 @@ struct retro_keyboard_callback
  * When ejected, the disk image index can be set.
  */
 typedef bool (RETRO_CALLCONV *retro_set_eject_state_t)(bool ejected);
+typedef bool (RETRO_CALLCONV *retro_set_drive_eject_state_t)(unsigned drive, bool ejected);
 
 /* Gets current eject state. The initial state is 'not ejected'. */
 typedef bool (RETRO_CALLCONV *retro_get_eject_state_t)(void);
+typedef bool (RETRO_CALLCONV *retro_get_drive_eject_state_t)(unsigned drive);
 
 /* Gets current disk index. First disk is index 0.
  * If return value is >= get_num_images(), no disk is currently inserted.
@@ -2371,6 +2838,9 @@ typedef bool (RETRO_CALLCONV *retro_set_image_index_t)(unsigned index);
 
 /* Gets total number of images which are available to use. */
 typedef unsigned (RETRO_CALLCONV *retro_get_num_images_t)(void);
+
+/* Gets total number of disk drives which are available to use. */
+typedef unsigned (RETRO_CALLCONV *retro_get_num_drives_t)(void);
 
 struct retro_game_info;
 
@@ -2474,6 +2944,31 @@ struct retro_disk_control_ext_callback
 
    retro_get_image_path_t get_image_path;       /* Optional - may be NULL */
    retro_get_image_label_t get_image_label;     /* Optional - may be NULL */
+};
+
+struct retro_disk_control_ext2_callback
+{
+   retro_set_eject_state_t set_eject_state;
+   retro_get_eject_state_t get_eject_state;
+
+   retro_get_image_index_t get_image_index;
+   retro_set_image_index_t set_image_index;
+   retro_get_num_images_t  get_num_images;
+
+   retro_replace_image_index_t replace_image_index;
+   retro_add_image_index_t add_image_index;
+
+   /* NOTE: Frontend will only attempt to record/restore
+    * last used disk index if both set_initial_image()
+    * and get_image_path() are implemented */
+   retro_set_initial_image_t set_initial_image; /* Optional - may be NULL */
+
+   retro_get_image_path_t get_image_path;       /* Optional - may be NULL */
+   retro_get_image_label_t get_image_label;     /* Optional - may be NULL */
+
+   retro_get_num_drives_t get_num_drives;     /* Optional - may be NULL */
+   retro_set_drive_eject_state_t set_drive_eject_state;     /* Optional - may be NULL */
+   retro_get_drive_eject_state_t get_drive_eject_state;     /* Optional - may be NULL */
 };
 
 enum retro_pixel_format
