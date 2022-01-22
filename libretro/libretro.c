@@ -476,7 +476,7 @@ static int load_m3u(const char *filename)
 			}
 			else if(*p){
 		        snprintf(name, sizeof(name), "%s%s", basedir, p);
-				images[loaded_disks] = strdup(name);
+				images[loaded_disks] = strdup(full_path);
 				if(++loaded_disks>=MAX_DISK_IMAGES)break;
 			}
 			p=c;
@@ -501,8 +501,6 @@ bool retro_load_game(const struct retro_game_info *info)
 	   return false;
    }
 
-	RPATH1[0]=RPATH2[0]=0;
-
 	cur_disk_idx = 0;
 	if (strstr(info->path, ".m3u") != NULL){
 		cur_disk_num = load_m3u(info->path);
@@ -512,11 +510,10 @@ bool retro_load_game(const struct retro_game_info *info)
 		full_path = info->path;
 		images[0] = strdup(full_path);
 		cur_disk_num = full_path ? 1 : 0;
+		strcpy(RPATH,full_path);
 	}
-
-	if(images[0])strncpy(RPATH1,images[0],sizeof(RPATH1)-1);
-	if(images[1])strncpy(RPATH2,images[1],sizeof(RPATH2)-1);
-	RPATH1[sizeof(RPATH1)-1]=RPATH2[sizeof(RPATH2)-1]=0;
+	if(images[0])strcpy(RPATH,images[0]);
+	else RPATH[0]=0;
 
    log_printf("LOAD EMU\n");
 
