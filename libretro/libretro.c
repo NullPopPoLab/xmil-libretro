@@ -557,7 +557,7 @@ static bool disk_get_image_label(unsigned index, char *label, size_t len)
 
       if (images[index][0])
       {
-         strncpy(path, images[index], len);
+         strncpy(label, images[index], len);
          return true;
       }
 
