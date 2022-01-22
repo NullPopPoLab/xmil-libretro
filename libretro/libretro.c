@@ -536,6 +536,34 @@ bool add_image_index(void) {
   return 1;
 }
 
+static bool disk_get_image_path(unsigned index, char *path, size_t len)
+{
+   if (len < 1)
+      return false;
+
+      if (images[index][0])
+      {
+         strncpy(path, images[index], len);
+         return true;
+      }
+
+   return false;
+}
+
+static bool disk_get_image_label(unsigned index, char *label, size_t len)
+{
+   if (len < 1)
+      return false;
+
+      if (images[index][0])
+      {
+         strncpy(path, images[index], len);
+         return true;
+      }
+
+   return false;
+}
+
 struct retro_disk_control_ext2_callback disk_controller =
   {
    .set_drive_eject_state = set_drive_eject_state,
@@ -545,7 +573,9 @@ struct retro_disk_control_ext2_callback disk_controller =
    .set_image_index = set_image_index,
    .get_num_images = get_num_images,
    .replace_image_index = replace_image_index,
-   .add_image_index = add_image_index
+   .add_image_index = add_image_index,
+   .get_image_path = disk_get_image_path,
+   .get_image_label = disk_get_image_label
 };
 
 void retro_init(void)
