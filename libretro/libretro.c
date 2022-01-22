@@ -476,7 +476,7 @@ static int load_m3u(const char *filename)
 			}
 			else if(*p){
 		        snprintf(name, sizeof(name), "%s%s", basedir, p);
-				images[loaded_disks] = strdup(full_path);
+				images[loaded_disks] = strdup(name);
 				if(++loaded_disks>=MAX_DISK_IMAGES)break;
 			}
 			p=c;
