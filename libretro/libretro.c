@@ -361,7 +361,7 @@ void retro_get_system_info(struct retro_system_info *info)
    info->library_name = "x1";
    info->library_version = "0.60";
    info->need_fullpath = true;
-   info->valid_extensions = "dx1|zip|2d|2hd|tfd|d88|88d|hdm|xdf|dup|cmd";
+   info->valid_extensions = "dx1|zip|2d|2hd|tfd|d88|88d|hdm|xdf|dup|cmd|m3u";
 }
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
@@ -431,6 +431,63 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
     (void)code;
 }
 
+static int load_m3u(const char *filename)
+{
+   char basedir[512];
+   char line[512];
+   char name[512];
+   char *search_char;
+   int loaded_disks = 0;
+	FILEH	fh;
+	char *p,*c;
+	UINT8* work;
+	UINT m3usize;
+
+	/* Get directory the M3U was loaded from */
+	strncpy(basedir, filename,sizeof(basedir)-1);
+	basedir[sizeof(basedir)-1]=0;
+	for(p=basedir;*p;++p);
+	for(;p>=basedir;--p){
+		if(*p=='/')break;
+	}
+	if(p>=basedir)p[1]=0;
+	fh = file_open_rb(filename);
+	if (fh == FILEH_INVALID) return 0;
+
+	m3usize=file_getsize(fh);
+	work = (UINT8 *)_MALLOC(m3usize+1, "m3u data");
+	if(file_read(fh,work,m3usize)!=m3usize){
+	   log_printf("m3u file cannot load.\n");
+	}
+	else{
+		work[m3usize]=0;
+		p=work;
+		do{
+			for(c=p;*c&&*c!='\r'&&*c!='\n';++c);
+			if(c[0]=='\r'&&c[1]=='\n'){
+				*c=0;
+				++c;
+			}
+			*c=0;
+			++c;
+			if(p[0]=='#'){
+				// comment 
+			}
+			else if(*p){
+		        snprintf(name, sizeof(name), "%s%s", basedir, p);
+				images[loaded_disks] = strdup(full_path);
+				if(++loaded_disks>=MAX_DISK_IMAGES)break;
+			}
+			p=c;
+		}while(p<&work[m3usize]);
+	}
+
+	_MFREE(work);
+	file_close(fh);
+
+   return loaded_disks;
+}
+
 bool retro_load_game(const struct retro_game_info *info)
 {
    const char *full_path;
@@ -443,13 +500,19 @@ bool retro_load_game(const struct retro_game_info *info)
 	   return false;
    }
 
-
-   full_path = info->path;
-   images[0] = strdup(full_path);
-   cur_disk_idx = 0;
-   cur_disk_num = full_path ? 1 : 0;
-
-   strcpy(RPATH,full_path);
+	cur_disk_idx = 0;
+	if (strstr(info->path, ".m3u") != NULL){
+		cur_disk_num = load_m3u(info->path);
+	}
+	else
+	{
+		full_path = info->path;
+		images[0] = strdup(full_path);
+		cur_disk_num = full_path ? 1 : 0;
+		strcpy(RPATH,full_path);
+	}
+	if(images[0])strcpy(RPATH,images[0]);
+	else RPATH[0]=0;
 
    log_printf("LOAD EMU\n");
 
