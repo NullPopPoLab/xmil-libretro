@@ -41,7 +41,8 @@ char slash = '/';
 #define SOUNDRATE 44100.0
 #define SNDSZ 735
 
-char RPATH[512];
+char RPATH1[512]={0};
+char RPATH2[512]={0};
 char RETRO_DIR[512];
 const char *retro_save_directory;
 const char *retro_system_directory;
@@ -89,9 +90,9 @@ long GetTicks(void)
   return (framecount * 100) / 6;
 }
 
-int pre_main(const char *floppy)
+int pre_main(const char *floppy1,const char *floppy2)
 {
-   xmil_main(floppy); 
+   xmil_main(floppy1,floppy2); 
 
    return 0;
 }
@@ -500,6 +501,8 @@ bool retro_load_game(const struct retro_game_info *info)
 	   return false;
    }
 
+	RPATH1[0]=RPATH2[0]=0;
+
 	cur_disk_idx = 0;
 	if (strstr(info->path, ".m3u") != NULL){
 		cur_disk_num = load_m3u(info->path);
@@ -509,10 +512,11 @@ bool retro_load_game(const struct retro_game_info *info)
 		full_path = info->path;
 		images[0] = strdup(full_path);
 		cur_disk_num = full_path ? 1 : 0;
-		strcpy(RPATH,full_path);
 	}
-	if(images[0])strcpy(RPATH,images[0]);
-	else RPATH[0]=0;
+
+	if(images[0])strncpy(RPATH1,images[0],sizeof(RPATH1)-1);
+	if(images[1])strncpy(RPATH2,images[1],sizeof(RPATH2)-1);
+	RPATH1[sizeof(RPATH1)-1]=RPATH2[sizeof(RPATH2)-1]=0;
 
    log_printf("LOAD EMU\n");
 
@@ -729,7 +733,7 @@ void retro_run(void)
    framecount++;
    if(firstcall)
    {
-      pre_main(RPATH);
+      pre_main(RPATH1,RPATH2);
       update_variables();
       mousemng_enable(MOUSEPROC_SYSTEM);
       firstcall=0;
