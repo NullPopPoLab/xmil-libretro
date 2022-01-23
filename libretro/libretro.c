@@ -622,11 +622,16 @@ static bool disk_get_image_label(unsigned index, char *label, size_t len)
    if (len < 1)
       return false;
 
-      if (images[index][0])
-      {
-         strncpy(label, images[index], len);
-         return true;
-      }
+		if (images[index][0])
+		{
+			const char* c;
+			for(c=images[index];*c;++c);
+			for(;c>images[index];--c){
+				if(c[-1]=='/')break;
+			}
+			strncpy(label, c, len);
+			return true;
+		}
 
    return false;
 }
