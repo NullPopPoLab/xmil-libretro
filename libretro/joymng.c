@@ -36,8 +36,10 @@ BYTE joymng_getstat(void) {
 
 	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A) )cJoyFlag &= ~JOY_BTN1_BIT;
 	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B) )cJoyFlag &= ~JOY_BTN2_BIT;
+#if 0
 	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X) )cJoyFlag &= ~JOY_BTN3_BIT;
 	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y) )cJoyFlag &= ~JOY_BTN4_BIT;
+#endif
 
 	s_cJoyFlag = cJoyFlag;
 
