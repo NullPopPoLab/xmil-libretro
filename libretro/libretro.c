@@ -346,7 +346,7 @@ void update_input(void)
 		if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_L2)) Core_Key_Sate[RETROK_RETURN] = 0x80;
 		if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_L3)) Core_Key_Sate[RETROK_LSHIFT] = 0x80;
 		if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_R3)) Core_Key_Sate[RETROK_LCTRL] = 0x80;
-		if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_MENU)) Core_Key_Sate[RETROK_LCTRL] = 0x80;
+		if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_MENU)) Core_Key_Sate[RETROK_LALT] = 0x80;
 
    		if(memcmp( Core_Key_Sate,Core_old_Key_Sate , sizeof(Core_Key_Sate) ) )
 			for(i=0;i<320;i++){
