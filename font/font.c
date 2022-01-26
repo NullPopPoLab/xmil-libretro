@@ -87,19 +87,19 @@ static void font_cnvx1t2x1(void) {
 }
 
 
-REG8 font_load(const OEMCHAR *filename, BOOL force) {
+REG8 font_load(const OEMCHAR *fontdir, BOOL force) {
 
-	OEMCHAR	fname[MAX_PATH];
+/*	OEMCHAR	fname[MAX_PATH];*/
 	REG8	type;
 	REG8	loading;
 	UINT	i;
 
-	if (filename) {
+/*	if (filename) {
 		file_cpyname(fname, filename, NELEMENTS(fname));
 	}
 	else {
 		fname[0] = '\0';
-	}
+	}*/
 	type = 0;
 	if ((!type) && (!force)) {
 		return(0);
@@ -117,10 +117,10 @@ REG8 font_load(const OEMCHAR *filename, BOOL force) {
 	ZeroMemory(font_knjx1t, sizeof(font_knjx1t));
 
 	loading = 0xff;
-	loading = x1fontread(fname, loading);
+	loading = x1fontread(fontdir, loading);
 	if (loading & FONTLOAD_16) {
 		makex1font(loading);
-		loading = x1fontread(fname, loading);
+		loading = x1fontread(fontdir, loading);
 	}
 	font_mirrorx1t();
 	font_cnvx1t2x1();
