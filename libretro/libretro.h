@@ -459,6 +459,18 @@ enum retro_key
    RETROK_UNDO           = 322,
    RETROK_OEM_102        = 323,
 
+   RETROK_CANCEL, /* for MSX */
+   RETROK_EXEC, /* for MSX,PC88 */
+   RETROK_CODE, /* for MSX,X68 */
+   RETROK_CONVERT, /* for PC88 */
+   RETROK_PC, /* for PC88 */
+   RETROK_KANA, /* for PC98,X68 */
+   RETROK_KP_COMMA, /* for PC98,X68 */
+   RETROK_ROMAN, /* for X68 */
+   RETROK_COPY, /* for X68 */
+   RETROK_HIRAGANA, /* for X68 */
+   RETROK_ZENKAKU, /* for X68 */
+
    RETROK_LAST,
 
    RETROK_DUMMY          = INT_MAX /* Ensure sizeof(enum) == sizeof(int) */
