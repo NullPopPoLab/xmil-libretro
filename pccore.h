@@ -75,7 +75,7 @@ void neitem_disp(NEVENTID id);
 void neitem_vsync(NEVENTID id);
 #endif
 
-void pccore_initialize(void);
+void pccore_initialize(const OEMCHAR *fontdir);
 void pccore_reset(void);
 void pccore_deinitialize(void);
 void pccore_exec(BOOL draw);

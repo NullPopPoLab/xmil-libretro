@@ -194,7 +194,7 @@ int advmain(int argc, char **argv) {
 
 	sysmng_initialize();
 
-	pccore_initialize();
+	pccore_initialize(NULL);
 	pccore_reset();
 
 	diskimgset();

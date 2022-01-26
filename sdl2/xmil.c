@@ -144,7 +144,7 @@ int xmil_main(int argc, char *argv[]) {
 	soundmng_initialize();
 	sysmng_initialize();
 	taskmng_initialize();
-	pccore_initialize();
+	pccore_initialize(NULL);
 //	S98_init();
 
 	scrndraw_redraw();

@@ -57,14 +57,14 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
 /* ---- */
 
-void pccore_initialize(void) {
+void pccore_initialize(const OEMCHAR *fontdir) {
 
 	Z80_INITIALIZE();
 	fddfile_initialize();
 	sndctrl_initialize();
 	makescrn_initialize();
 
-	font_load(NULL, TRUE);
+	font_load(fontdir, TRUE);
 
 	crtc_initialize();
 	pcg_initialize();

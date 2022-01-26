@@ -1026,7 +1026,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	sysmng_initialize();
 	joymng_initialize();
 
-	pccore_initialize();
+	pccore_initialize(NULL);
 	pccore_reset();
 
 	xmilopening = 0;
