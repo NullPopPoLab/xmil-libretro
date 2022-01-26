@@ -117,10 +117,10 @@ REG8 font_load(const OEMCHAR *filename, BOOL force) {
 	ZeroMemory(font_knjx1t, sizeof(font_knjx1t));
 
 	loading = 0xff;
-	loading = x1fontread(file_getcd(x1ank1name), loading);
+	loading = x1fontread(fname, loading);
 	if (loading & FONTLOAD_16) {
 		makex1font(loading);
-		loading = x1fontread(file_getcd(x1ank1name), loading);
+		loading = x1fontread(fname, loading);
 	}
 	font_mirrorx1t();
 	font_cnvx1t2x1();

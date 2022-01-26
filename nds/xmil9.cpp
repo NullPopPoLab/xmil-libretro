@@ -264,7 +264,7 @@ int nds9main()
 
 	sysmng_initialize();
 
-	pccore_initialize();
+	pccore_initialize(NULL);
 	pccore_reset();
 
 	diskimgset();

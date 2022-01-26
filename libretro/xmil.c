@@ -42,7 +42,7 @@ int xmil_main(const char *floppy) {
 	soundmng_initialize();
 	sysmng_initialize();
 	taskmng_initialize();
-	pccore_initialize();
+	pccore_initialize("bios/xmil/");
 //	S98_init();
 
 	scrndraw_redraw();
