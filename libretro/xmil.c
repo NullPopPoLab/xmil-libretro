@@ -22,7 +22,7 @@ XMILOSCFG	xmiloscfg = {0, 0};
 
 // ---- proc
 
-int xmil_main(const char *floppy) {
+int xmil_main(const char *floppy1,const char *floppy2) {
 
 	initload();
 
@@ -48,7 +48,8 @@ int xmil_main(const char *floppy) {
 	scrndraw_redraw();
 	pccore_reset();
  
-	if(floppy)diskdrv_setfdd(0,floppy, 0/*read_only*/);
+	if(floppy1)diskdrv_setfdd(0,floppy1, 0/*read_only*/);
+	if(floppy2)diskdrv_setfdd(1,floppy2, 0/*read_only*/);
 
 #if defined(SUPPORT_RESUME)
 	if (xmiloscfg.resume) {
