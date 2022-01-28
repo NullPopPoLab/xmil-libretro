@@ -45,6 +45,8 @@ bool ADVANCED_M3U=FALSE;
 int ADVANCED_FD1=-1;
 int ADVANCED_FD2=-1;
 
+bool READONLY1=FALSE;
+bool READONLY2=FALSE;
 char RPATH1[512]={0};
 char RPATH2[512]={0};
 char RETRO_DIR[512];
@@ -67,6 +69,7 @@ signed short soundbuf[1024*2];
 uint16_t videoBuffer[(SCREEN_PITCH / 2) * FULLSCREEN_HEIGHT];  //emu  surf
 
 #define MAX_DISK_IMAGES 100
+static bool images_ro[MAX_DISK_IMAGES]={0};
 static char *images[MAX_DISK_IMAGES];
 static int cur_disk_idx, cur_disk_num;
 
@@ -94,9 +97,9 @@ long GetTicks(void)
   return (framecount * 100) / 6;
 }
 
-int pre_main(const char *floppy1,const char *floppy2)
+int pre_main(bool ro1,const char *floppy1,bool ro1,const char *floppy2)
 {
-   xmil_main(floppy1,floppy2); 
+   xmil_main(ro1,floppy1,ro2,floppy2); 
 
    return 0;
 }
@@ -489,20 +492,25 @@ static int load_m3u(const char *filename)
 					if(*p && *p!=';')typ=*p++;
 					else typ=0;
 					if(*p && *p!=';')num=*p++;
-					else num=0;
-					if(*p=='!')rof=*p++;
+					else num='0';
+					if(*p=='!'){rof=1; ++p;}
 					else rof=0;
 					if(*p==';')++p;
 
 					switch(typ){
 						case 'F': /* floppy drive */
 						switch(num){
+							case '0': /* undrived floppy */
+							break;
+
 							case '1': /* 1st floppy drive */
 							if(*p)ADVANCED_FD1=loaded_disks;
+							READONLY1=rof;
 							break;
 
 							case '2': /* 2nd floppy drive */
 							if(*p)ADVANCED_FD2=loaded_disks;
+							READONLY2=rof;
 							break;
 						}
 						break;
@@ -522,6 +530,7 @@ static int load_m3u(const char *filename)
 				}
 		        snprintf(name, sizeof(name), "%s%s", basedir, p);
 				images[loaded_disks] = strdup(name);
+				images_ro[loaded_disks]=rof;
 				if(++loaded_disks>=MAX_DISK_IMAGES)break;
 			}
 			p=c;
@@ -611,7 +620,7 @@ bool set_eject_state(bool ejected) {
   if (ejected || cur_disk_idx >= cur_disk_num) {
     fddfile_eject(0);
   } else {
-    diskdrv_setfdd(0, images[cur_disk_idx], 0);
+    diskdrv_setfdd(0, images[cur_disk_idx], images_ro[cur_disk_idx]);
   }
   return 1;
 }
@@ -749,7 +758,7 @@ void retro_run(void)
    framecount++;
    if(firstcall)
    {
-      pre_main(RPATH1,RPATH2);
+      pre_main(READONLY1,RPATH1,READONLY2,RPATH2);
       update_variables();
       mousemng_enable(MOUSEPROC_SYSTEM);
       firstcall=0;
