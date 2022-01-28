@@ -41,6 +41,10 @@ char slash = '/';
 #define SOUNDRATE 44100.0
 #define SNDSZ 735
 
+bool ADVANCED_M3U=FALSE;
+int ADVANCED_FD1=-1;
+int ADVANCED_FD2=-1;
+
 char RPATH1[512]={0};
 char RPATH2[512]={0};
 char RETRO_DIR[512];
@@ -461,6 +465,8 @@ static int load_m3u(const char *filename)
 	   log_printf("m3u file cannot load.\n");
 	}
 	else{
+		char typ,num,rof;
+
 		work[m3usize]=0;
 		p=work;
 		do{
@@ -475,6 +481,45 @@ static int load_m3u(const char *filename)
 				// comment 
 			}
 			else if(*p){
+				if(*p=='*'){
+					// advanced mark 
+					ADVANCED_M3U=TRUE;
+					++p;
+
+					if(*p && *p!=';')typ=*p++;
+					else typ=0;
+					if(*p && *p!=';')num=*p++;
+					else num=0;
+					if(*p=='!')rof=*p++;
+					else rof=0;
+					if(*p==';')++p;
+
+					switch(typ){
+						case 'F': /* floppy drive */
+						switch(num){
+							case '1': /* 1st floppy drive */
+							if(*p)ADVANCED_FD1=loaded_disks;
+							break;
+
+							case '2': /* 2nd floppy drive */
+							if(*p)ADVANCED_FD2=loaded_disks;
+							break;
+						}
+						break;
+
+						case 'T': /* tape drive */
+						break;
+
+						case 'R': /* ROM slot */
+						break;
+
+						case 'H': /* hard drive */
+						break;
+
+						case 'O': /* optical drive */
+						break;
+					}
+				}
 		        snprintf(name, sizeof(name), "%s%s", basedir, p);
 				images[loaded_disks] = strdup(name);
 				if(++loaded_disks>=MAX_DISK_IMAGES)break;
@@ -514,8 +559,14 @@ bool retro_load_game(const struct retro_game_info *info)
 		cur_disk_num = full_path ? 1 : 0;
 	}
 
-	if(images[0])strncpy(RPATH1,images[0],sizeof(RPATH1)-1);
-	if(images[1])strncpy(RPATH2,images[1],sizeof(RPATH2)-1);
+	if(ADVANCED_M3U){
+		if(ADVANCED_FD1=>0)strncpy(RPATH1,images[ADVANCED_FD1],sizeof(RPATH1)-1);
+		if(ADVANCED_FD2=>0)strncpy(RPATH2,images[ADVANCED_FD2],sizeof(RPATH2)-1);
+	}
+	else{
+		if(images[0])strncpy(RPATH1,images[0],sizeof(RPATH1)-1);
+		if(images[1])strncpy(RPATH2,images[1],sizeof(RPATH2)-1);
+	}
 	RPATH1[sizeof(RPATH1)-1]=RPATH2[sizeof(RPATH2)-1]=0;
 
    log_printf("LOAD EMU\n");
