@@ -22,7 +22,7 @@ XMILOSCFG	xmiloscfg = {0, 0};
 
 // ---- proc
 
-int xmil_main(bool ro1,const char *floppy1,bool ro2,const char *floppy2) {
+int xmil_main(int ro1,const char *floppy1,int ro2,const char *floppy2) {
 
 	initload();
 

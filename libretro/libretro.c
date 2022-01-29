@@ -97,7 +97,7 @@ long GetTicks(void)
   return (framecount * 100) / 6;
 }
 
-int pre_main(bool ro1,const char *floppy1,bool ro1,const char *floppy2)
+int pre_main(bool ro1,const char *floppy1,bool ro2,const char *floppy2)
 {
    xmil_main(ro1,floppy1,ro2,floppy2); 
 
@@ -595,8 +595,8 @@ bool retro_load_game(const struct retro_game_info *info)
 	}
 
 	if(ADVANCED_M3U){
-		if(ADVANCED_FD1=>0)strncpy(RPATH1,images[ADVANCED_FD1],sizeof(RPATH1)-1);
-		if(ADVANCED_FD2=>0)strncpy(RPATH2,images[ADVANCED_FD2],sizeof(RPATH2)-1);
+		if(ADVANCED_FD1>=0)strncpy(RPATH1,images[ADVANCED_FD1],sizeof(RPATH1)-1);
+		if(ADVANCED_FD2>=0)strncpy(RPATH2,images[ADVANCED_FD2],sizeof(RPATH2)-1);
 	}
 	else{
 		if(images[0])strncpy(RPATH1,images[0],sizeof(RPATH1)-1);
