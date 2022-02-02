@@ -476,17 +476,36 @@ enum retro_key
    RETROK_UNDO           = 322,
    RETROK_OEM_102        = 323,
 
-   RETROK_CANCEL, /* for MSX */
-   RETROK_EXEC, /* for MSX,PC88 */
-   RETROK_CODE, /* for MSX,X68 */
-   RETROK_CONVERT, /* for PC88 */
-   RETROK_PC, /* for PC88 */
-   RETROK_KANA, /* for PC98,X68 */
-   RETROK_KP_COMMA, /* for PC98,X68 */
-   RETROK_ROMAN, /* for X68 */
-   RETROK_COPY, /* for X68 */
-   RETROK_HIRAGANA, /* for X68 */
-   RETROK_ZENKAKU, /* for X68 */
+   RETROK_CANCEL         = 324, /* for MSX */
+   RETROK_EXEC           = 325, /* for MSX,PC88 */
+   RETROK_CODE           = 326, /* for X68 */
+   RETROK_CONVERT        = 327, /* for PC88 */
+   RETROK_PC             = 328, /* for PC88 */
+   RETROK_KANA           = 329, /* for MSX,PC98,X68 */
+   RETROK_KP_COMMA       = 330, /* for PC98,X68 */
+   RETROK_ROMAN          = 331, /* for X68 */
+   RETROK_COPY           = 332, /* for X68 */
+   RETROK_HIRAGANA       = 333, /* for X68 */
+   RETROK_ZENKAKU        = 334, /* for X68 */
+
+   RETROK_JOYPAD_UP      = 380,
+   RETROK_JOYPAD_DOWN    = 381,
+   RETROK_JOYPAD_LEFT    = 382,
+   RETROK_JOYPAD_RIGHT   = 383,
+   RETROK_JOYPAD_1       = 384,
+   RETROK_JOYPAD_2       = 385,
+   RETROK_JOYPAD_3       = 386,
+   RETROK_JOYPAD_4       = 387,
+   RETROK_JOYPAD_5       = 388,
+   RETROK_JOYPAD_6       = 389,
+   RETROK_JOYPAD_7       = 390,
+   RETROK_JOYPAD_8       = 391,
+
+   RETROK_MOUSE_1        = 395,
+   RETROK_MOUSE_2        = 396,
+   RETROK_MOUSE_3        = 397,
+   RETROK_MOUSE_4        = 398,
+   RETROK_MOUSE_5        = 399,
 
    RETROK_LAST,
 

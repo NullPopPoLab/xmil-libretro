@@ -3,6 +3,7 @@
 
 #include "libretro.h"
 extern retro_input_state_t input_state_cb;
+extern unsigned input_devices[];
 
 static UINT8 s_cJoyFlag = 0;
 
@@ -29,17 +30,30 @@ BYTE joymng_getstat(void) {
 	{
 		UINT8 cJoyFlag = 0xff;
 
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP))cJoyFlag &= ~JOY_UP_BIT;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN))cJoyFlag &= ~JOY_DOWN_BIT;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT))cJoyFlag &= ~JOY_LEFT_BIT;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT))cJoyFlag &= ~JOY_RIGHT_BIT;
+		switch(input_devices[0]){
+			case RETRO_DEVICE_JOYPAD:
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP))cJoyFlag &= ~JOY_UP_BIT;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN))cJoyFlag &= ~JOY_DOWN_BIT;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT))cJoyFlag &= ~JOY_LEFT_BIT;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT))cJoyFlag &= ~JOY_RIGHT_BIT;
 
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A) )cJoyFlag &= ~JOY_BTN1_BIT;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B) )cJoyFlag &= ~JOY_BTN2_BIT;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A) )cJoyFlag &= ~JOY_BTN1_BIT;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B) )cJoyFlag &= ~JOY_BTN2_BIT;
 #if 0
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X) )cJoyFlag &= ~JOY_BTN3_BIT;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y) )cJoyFlag &= ~JOY_BTN4_BIT;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X) )cJoyFlag &= ~JOY_BTN3_BIT;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y) )cJoyFlag &= ~JOY_BTN4_BIT;
 #endif
+			break;
+
+			case RETRO_DEVICE_KEYBOARD:
+			if(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_JOYPAD_UP))cJoyFlag &= ~JOY_UP_BIT;
+			if(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_JOYPAD_DOWN))cJoyFlag &= ~JOY_DOWN_BIT;
+			if(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_JOYPAD_LEFT))cJoyFlag &= ~JOY_LEFT_BIT;
+			if(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_JOYPAD_RIGHT))cJoyFlag &= ~JOY_RIGHT_BIT;
+			if(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_JOYPAD_1))cJoyFlag &= ~JOY_BTN1_BIT;
+			if(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_JOYPAD_2))cJoyFlag &= ~JOY_BTN2_BIT;
+			break;
+		}
 
 	s_cJoyFlag = cJoyFlag;
 
