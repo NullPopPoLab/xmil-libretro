@@ -190,7 +190,7 @@ static void update_variables(void)
    }
 
    int resolute = get_booleanvar("X1_RESOLUTE", "LOW");
-   int bootmedia = get_booleanvar("X1_BOOTMEDIA", "2D");
+   int bootmedia = get_booleanvar("X1_BOOTMEDIA", "2HD");
 
    xmilcfg.DIP_SW = (resolute ? DIPSW_RESOLUTE : 0) | (bootmedia ? DIPSW_BOOTMEDIA : 0);
 
