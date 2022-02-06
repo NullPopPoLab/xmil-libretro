@@ -72,6 +72,7 @@ uint16_t videoBuffer[(SCREEN_PITCH / 2) * FULLSCREEN_HEIGHT];  //emu  surf
 static bool images_ro[MAX_DISK_IMAGES]={0};
 static char *images[MAX_DISK_IMAGES];
 static int cur_disk_idx, cur_disk_num;
+static int inserted_disk_idx[4]={-1,-1,-1,-1};
 
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
@@ -569,12 +570,24 @@ bool retro_load_game(const struct retro_game_info *info)
 	}
 
 	if(ADVANCED_M3U){
-		if(ADVANCED_FD1>=0)strncpy(RPATH1,images[ADVANCED_FD1],sizeof(RPATH1)-1);
-		if(ADVANCED_FD2>=0)strncpy(RPATH2,images[ADVANCED_FD2],sizeof(RPATH2)-1);
+		if(ADVANCED_FD1>=0){
+			strncpy(RPATH1,images[ADVANCED_FD1],sizeof(RPATH1)-1);
+			inserted_disk_idx[0]=ADVANCED_FD1;
+		}
+		if(ADVANCED_FD2>=0){
+			strncpy(RPATH2,images[ADVANCED_FD2],sizeof(RPATH2)-1);
+			inserted_disk_idx[1]=ADVANCED_FD2;
+		}
 	}
 	else{
-		if(images[0])strncpy(RPATH1,images[0],sizeof(RPATH1)-1);
-		if(images[1])strncpy(RPATH2,images[1],sizeof(RPATH2)-1);
+		if(images[0]){
+			strncpy(RPATH1,images[0],sizeof(RPATH1)-1);
+			inserted_disk_idx[0]=0;
+		}
+		if(images[1]){
+			strncpy(RPATH2,images[1],sizeof(RPATH2)-1);
+			inserted_disk_idx[1]=1;
+		}
 	}
 	RPATH1[sizeof(RPATH1)-1]=RPATH2[sizeof(RPATH2)-1]=0;
 
@@ -619,8 +632,10 @@ size_t retro_get_memory_size(unsigned id)
 bool set_drive_eject_state(unsigned drive,bool ejected) {
   if (ejected || cur_disk_idx >= cur_disk_num) {
     fddfile_eject(drive);
+	inserted_disk_idx[drive]=-1;
   } else {
     diskdrv_setfdd(drive, images[cur_disk_idx], images_ro[cur_disk_idx]);
+    inserted_disk_idx[drive]=cur_disk_idx;
   }
   return 1;
 }
@@ -696,6 +711,13 @@ static bool disk_get_image_label(unsigned index, char *label, size_t len)
    return false;
 }
 
+static int disk_get_drive_image_index(unsigned drive)
+{
+	if(drive>=get_num_drives())return -1;
+	if(get_drive_eject_state(drive))return -1;
+	return inserted_disk_idx[drive];	
+}
+
 struct retro_disk_control_ext2_callback disk_controller =
   {
    .set_drive_eject_state = set_drive_eject_state,
@@ -707,7 +729,8 @@ struct retro_disk_control_ext2_callback disk_controller =
    .replace_image_index = replace_image_index,
    .add_image_index = add_image_index,
    .get_image_path = disk_get_image_path,
-   .get_image_label = disk_get_image_label
+   .get_image_label = disk_get_image_label,
+   .get_drive_image_index = disk_get_drive_image_index
 };
 
 void retro_init(void)
