@@ -149,26 +149,26 @@ void retro_set_environment(retro_environment_t cb)
    };
 
    struct retro_variable variables[] = {
-      { "X1_RESOLUTE" , "Resolution; LOW|HIGH" },
-      { "X1_BOOTMEDIA" , "Boot media; 2HD|2D" },
-      { "X1_ROMTYPE", "ROM type; X1|TURBO|TURBOZ" },
-      { "X1_FPS", "FPS; AUTO|60|30|20|15" },
-      { "X1_DISPSYNC", "Disp Vsync; OFF|ON" },
-      { "X1_RASTER", "Raster; OFF|ON" },
-      { "X1_NOWAIT", "No wait; OFF|ON" },
-      { "X1_BTN_MODE", "Joy Reverse; OFF|ON" },
-      { "X1_BTN_RAPID", "Joy Rapid; OFF|ON" },
-      { "X1_AUDIO_RATE", "Audio sampling rate; 44100|22050|11025"},
-      {	"X1_SEEKSND", "Seek Sound; OFF|ON" },
-      {	"X1_SCANLINES", "Scanlines in low-res; OFF|ON" },
-      { "X1_KEY_MODE", "Key mode; Keyboard|JoyKey-1|JoyKey-2|Mouse-Key" },
-      { "X1_FMBOARD", "FM Board; ON|OFF"
+      { "x1_resolute" , "Resolution; LOW|HIGH" },
+      { "x1_bootmedia" , "Boot media; 2HD|2D" },
+      { "x1_romtype", "ROM type; X1|TURBO|TURBOZ" },
+      { "x1_fps", "FPS; AUTO|60|30|20|15" },
+      { "x1_dispsync", "Disp Vsync; OFF|ON" },
+      { "x1_raster", "Raster; OFF|ON" },
+      { "x1_nowait", "No wait; OFF|ON" },
+      { "x1_btn_mode", "Joy Reverse; OFF|ON" },
+      { "x1_btn_rapid", "Joy Rapid; OFF|ON" },
+      { "x1_audio_rate", "Audio sampling rate; 44100|22050|11025"},
+      {	"x1_seeksnd", "Seek Sound; OFF|ON" },
+      {	"x1_scanlines", "Scanlines in low-res; OFF|ON" },
+      { "x1_key_mode", "Key mode; Keyboard|JoyKey-1|JoyKey-2|Mouse-Key" },
+      { "x1_fmboard", "FM Board; ON|OFF"
 #if defined(SUPPORT_OPMx2)
 	"|DOUBLE"
 #endif
       },
-      { "X1_AUDIO_DELAYMS", "Audio buffer (ms); 250|100|150|200|300|350|500|750|1000" },
-      { "X1_CPU_CLOCK", "Cpu clock (MHz); 4|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20" },
+      { "x1_audio_delayms", "Audio buffer (ms); 250|100|150|200|300|350|500|750|1000" },
+      { "x1_cpu_clock", "Cpu clock (MHz); 4|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20" },
 
       { NULL, NULL },
    };
@@ -204,7 +204,7 @@ static void update_variables(void)
 
    int audiorate = 44100;
 
-   var.key = "X1_AUDIO_RATE";
+   var.key = "x1_audio_rate";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -220,14 +220,14 @@ static void update_variables(void)
      corestat.soundrenewal = 1;
    }
 
-   int resolute = get_booleanvar("X1_RESOLUTE", "LOW");
-   int bootmedia = get_booleanvar("X1_BOOTMEDIA", "2D");
+   int resolute = get_booleanvar("x1_resolute", "LOW");
+   int bootmedia = get_booleanvar("x1_bootmedia", "2D");
 
    xmilcfg.DIP_SW = (resolute ? DIPSW_RESOLUTE : 0) | (bootmedia ? DIPSW_BOOTMEDIA : 0);
 
    int romtype = 1;
 
-   var.key = "X1_ROMTYPE";
+   var.key = "x1_romtype";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -244,7 +244,7 @@ static void update_variables(void)
 
    int fps = 0;
 
-   var.key = "X1_FPS";
+   var.key = "x1_fps";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -263,16 +263,16 @@ static void update_variables(void)
 
    xmiloscfg.DRAW_SKIP = fps;
 
-   xmilcfg.DISPSYNC = get_booleanvar("X1_DISPSYNC", "ON");
-   xmilcfg.RASTER = get_booleanvar("X1_RASTER", "ON");
-   xmiloscfg.NOWAIT = get_booleanvar("X1_NOWAIT", "ON");
-   xmilcfg.BTN_MODE = get_booleanvar("X1_BTN_MODE", "ON");
-   xmilcfg.BTN_RAPID = get_booleanvar("X1_BTN_RAPID", "ON");
-   xmilcfg.MOTOR = get_booleanvar("X1_SEEKSND", "ON");
-   allow_scanlines = get_booleanvar("X1_SCANLINES", "ON");
+   xmilcfg.DISPSYNC = get_booleanvar("x1_dispsync", "ON");
+   xmilcfg.RASTER = get_booleanvar("x1_raster", "ON");
+   xmiloscfg.NOWAIT = get_booleanvar("x1_nowait", "ON");
+   xmilcfg.BTN_MODE = get_booleanvar("x1_btn_mode", "ON");
+   xmilcfg.BTN_RAPID = get_booleanvar("x1_btn_rapid", "ON");
+   xmilcfg.MOTOR = get_booleanvar("x1_seeksnd", "ON");
+   allow_scanlines = get_booleanvar("x1_scanlines", "ON");
 
    int keymode = 0;
-   var.key = "X1_KEY_MODE";
+   var.key = "x1_key_mode";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -294,7 +294,7 @@ static void update_variables(void)
 
    int fmboard = 1;
 
-   var.key = "X1_FMBOARD";
+   var.key = "x1_fmboard";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -311,7 +311,7 @@ static void update_variables(void)
 
    int delayms = 250;
 
-   var.key = "X1_AUDIO_DELAYMS";
+   var.key = "x1_audio_delayms";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -329,7 +329,7 @@ static void update_variables(void)
 
    int cpuclock = 4;
 
-   var.key = "X1_CPU_CLOCK";
+   var.key = "x1_cpu_clock";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
