@@ -151,7 +151,7 @@ void retro_set_environment(retro_environment_t cb)
 
    struct retro_variable variables[] = {
       { "x1_resolute" , "Resolution; LOW|HIGH" },
-      { "x1_bootmedia" , "Boot media; 2HD|2D" },
+      { "x1_bootmedia" , "Boot media; 2D|2HD" },
       { "x1_romtype", "ROM type; X1|TURBO|TURBOZ" },
       { "x1_fps", "FPS; AUTO|60|30|20|15" },
       { "x1_dispsync", "Disp Vsync; OFF|ON" },
