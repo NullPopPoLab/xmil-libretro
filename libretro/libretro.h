@@ -2872,6 +2872,8 @@ typedef bool (RETRO_CALLCONV *retro_get_drive_eject_state_t)(unsigned drive);
  * If return value is >= get_num_images(), no disk is currently inserted.
  */
 typedef unsigned (RETRO_CALLCONV *retro_get_image_index_t)(void);
+/* Gets drive inserted disk index. (-1 means ejected) */
+typedef int (RETRO_CALLCONV *retro_get_drive_image_index_t)(unsigned drive);
 
 /* Sets image index. Can only be called when disk is ejected.
  * The implementation supports setting "no disk" by using an
@@ -3012,6 +3014,7 @@ struct retro_disk_control_ext2_callback
    retro_get_num_drives_t get_num_drives;     /* Optional - may be NULL */
    retro_set_drive_eject_state_t set_drive_eject_state;     /* Optional - may be NULL */
    retro_get_drive_eject_state_t get_drive_eject_state;     /* Optional - may be NULL */
+   retro_get_drive_image_index_t get_drive_image_index;     /* Optional - may be NULL */
 };
 
 enum retro_pixel_format
