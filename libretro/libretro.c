@@ -330,8 +330,67 @@ void update_input(void)
 
 		for(i=0;i<335;i++)
 			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
-		for(i=380;i<400;i++)
+		for(i=376;i<400;i++)
 			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
+
+   		if(Core_Key_Sate[RETROK_KP789]){
+   		    if(Core_Key_Sate[RETROK_KP369] && !Core_Key_Sate[RETROK_KP147])Core_Key_Sate[RETROK_KP9]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP147] && !Core_Key_Sate[RETROK_KP369])Core_Key_Sate[RETROK_KP7]=0x80;
+   		    else Core_Key_Sate[RETROK_KP8]=0x80;
+   		}
+   		if(Core_Key_Sate[RETROK_KP123]){
+   		    if(Core_Key_Sate[RETROK_KP369] && !Core_Key_Sate[RETROK_KP147])Core_Key_Sate[RETROK_KP3]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP147] && !Core_Key_Sate[RETROK_KP369])Core_Key_Sate[RETROK_KP1]=0x80;
+   		    else Core_Key_Sate[RETROK_KP2]=0x80;
+   		}
+   		if(Core_Key_Sate[RETROK_KP147]){
+   		    if(Core_Key_Sate[RETROK_KP789] && !Core_Key_Sate[RETROK_KP123])Core_Key_Sate[RETROK_KP7]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP123] && !Core_Key_Sate[RETROK_KP789])Core_Key_Sate[RETROK_KP1]=0x80;
+   		    else Core_Key_Sate[RETROK_KP4]=0x80;
+   		}
+   		if(Core_Key_Sate[RETROK_KP369]){
+   		    if(Core_Key_Sate[RETROK_KP789] && !Core_Key_Sate[RETROK_KP123])Core_Key_Sate[RETROK_KP9]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP123] && !Core_Key_Sate[RETROK_KP789])Core_Key_Sate[RETROK_KP3]=0x80;
+   		    else Core_Key_Sate[RETROK_KP6]=0x80;
+   		}
+
+		switch(input_devices[0]){
+			case RETRO_DEVICE_JOYPAD:
+			break;
+
+			case RETRO_DEVICE_JOY2CURSOR:
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_UP)) Core_Key_Sate[RETROK_UP] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_DOWN)) Core_Key_Sate[RETROK_DOWN] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_LEFT)) Core_Key_Sate[RETROK_LEFT] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_RIGHT)) Core_Key_Sate[RETROK_RIGHT] = 0x80;
+			break;
+
+			case RETRO_DEVICE_JOY2NUMPAD:
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_UP)) Core_Key_Sate[RETROK_KP8] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_DOWN)) Core_Key_Sate[RETROK_KP2] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_LEFT)) Core_Key_Sate[RETROK_KP4] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_RIGHT)) Core_Key_Sate[RETROK_KP6] = 0x80;
+			break;
+		}
+		switch(input_devices[0]){
+			case RETRO_DEVICE_JOYPAD:
+			case RETRO_DEVICE_JOY2CURSOR:
+			case RETRO_DEVICE_JOY2NUMPAD:
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_C)) Core_Key_Sate[RETROK_SPACE] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_Z)) Core_Key_Sate[RETROK_F1] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_Y)) Core_Key_Sate[RETROK_F2] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_X)) Core_Key_Sate[RETROK_F3] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_SELECT)) Core_Key_Sate[RETROK_PAGEUP] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_START)) Core_Key_Sate[RETROK_PAGEDOWN] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_R)) Core_Key_Sate[RETROK_F4] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_R2)) Core_Key_Sate[RETROK_F5] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_L)) Core_Key_Sate[RETROK_ESCAPE] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_L2)) Core_Key_Sate[RETROK_RETURN] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_L3)) Core_Key_Sate[RETROK_LSHIFT] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_R3)) Core_Key_Sate[RETROK_LCTRL] = 0x80;
+			if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_MENU)) Core_Key_Sate[RETROK_LALT] = 0x80;
+			break;
+		}
 
    		if(memcmp( Core_Key_Sate,Core_old_Key_Sate , sizeof(Core_Key_Sate) ) )
 			for(i=0;i<320;i++){
