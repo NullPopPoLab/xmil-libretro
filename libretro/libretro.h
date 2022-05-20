@@ -483,6 +483,11 @@ enum retro_key
    RETROK_HIRAGANA       = 333, /* for X68 */
    RETROK_ZENKAKU        = 334, /* for X68 */
 
+   RETROK_KP789          = 376, /* for Joy2NumPad */
+   RETROK_KP123          = 377, /* for Joy2NumPad */
+   RETROK_KP147          = 378, /* for Joy2NumPad */
+   RETROK_KP369          = 379, /* for Joy2NumPad */
+
    RETROK_JOYPAD_UP      = 380,
    RETROK_JOYPAD_DOWN    = 381,
    RETROK_JOYPAD_LEFT    = 382,
