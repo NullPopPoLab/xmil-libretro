@@ -328,11 +328,10 @@ void update_input(void)
 
   	joymng_sync();
 
-
-
-
-   		for(i=0;i<320;i++)
-      			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
+		for(i=0;i<335;i++)
+			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
+		for(i=380;i<400;i++)
+			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
 
    		if(memcmp( Core_Key_Sate,Core_old_Key_Sate , sizeof(Core_Key_Sate) ) )
 			for(i=0;i<320;i++){
