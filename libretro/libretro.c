@@ -33,6 +33,8 @@
 #include "fddfile.h"
 #include "z80core.h"
 
+#define CUSTOM_VERSION "+NC38"
+
 #ifdef _WIN32
 char slash = '\\';
 #else
@@ -360,7 +362,7 @@ void retro_get_system_info(struct retro_system_info *info)
 {
    memset(info, 0, sizeof(*info));
    info->library_name = "x1";
-   info->library_version = "0.60";
+   info->library_version = "0.60" CUSTOM_VERSION;
    info->need_fullpath = true;
    info->valid_extensions = "dx1|zip|2d|2hd|tfd|d88|88d|hdm|xdf|dup|cmd";
 }
