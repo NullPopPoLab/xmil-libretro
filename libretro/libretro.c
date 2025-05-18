@@ -68,7 +68,6 @@ signed short soundbuf[1024*2];
 uint16_t videoBuffer[(SCREEN_PITCH / 2) * FULLSCREEN_HEIGHT];  //emu  surf
 
 #define MAX_DISK_IMAGES 100
-static char *images[MAX_DISK_IMAGES];
 static int cur_disk_idx;
 
 static retro_video_refresh_t video_cb;
@@ -482,8 +481,6 @@ static bool load_m3u(const char *file)
 
 bool retro_load_game(const struct retro_game_info *info)
 {
-   const char *full_path;
-
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
 
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
@@ -506,21 +503,16 @@ bool retro_load_game(const struct retro_game_info *info)
 		for(int i=0;i<am3u_fd->slot_max;++i){
 			if(am3u_fd->slot_tbl[i]<0)continue;
 			const AdvancedM3UMedia* media=&am3u_fd->changee_tbl[am3u_fd->slot_tbl[i]];
-			images[i] = strdup(media->path);
 
 			if (log_cb)
 				log_cb(RETRO_LOG_INFO, "FD%u: %s%s\n",i,media->path,media->readonly?" (readonly)":"");
 		}
-		full_path = images[0];
 	}
 	else
 	{
 		QTextRef qpath;
 		qtext_ref_c(&qpath,info->path);
 		am3u_device_add_media(am3u_fd,1,false,NULL,&qpath,NULL);
-
-		full_path = info->path;
-		images[0] = strdup(full_path);
 	}
 
    log_printf("LOAD EMU\n");
@@ -584,7 +576,11 @@ bool set_eject_state(bool ejected) {
   if (ejected || cur_disk_idx >= am3u_fd->changee_used) {
     fddfile_eject(0);
   } else {
-    diskdrv_setfdd(0, images[cur_disk_idx], 0);
+	am3u_fd->slot_tbl[0]=cur_disk_idx;
+	const AdvancedM3UMedia* fd0=(am3u_fd->slot_tbl[0]<0)?NULL:
+		&am3u_fd->changee_tbl[am3u_fd->slot_tbl[0]];
+
+    diskdrv_setfdd(0, fd0?fd0->path:NULL, fd0?fd0->readonly:false);
   }
   return 1;
 }
@@ -612,7 +608,16 @@ bool replace_image_index(unsigned index,
 			 const struct retro_game_info *info) {
   if (index >= am3u_fd->changee_used)
     return 0;
-  images[index] = strdup(info->path);
+
+	qtext_free(&am3u_fd->changee_tbl[index].path);
+	qtext_free(&am3u_fd->changee_tbl[index].label);
+
+	am3u_fd->changee_tbl[index].path=qtext_alloc_c(info->path);
+
+	QTextRef label;
+	qpath_filename_noext_c(&label,info->path,false);
+	am3u_fd->changee_tbl[index].label=qtext_alloc_q(&label);
+
   return 1;
 }
 
