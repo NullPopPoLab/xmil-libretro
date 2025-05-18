@@ -54,6 +54,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	PCCORE		pccore;
 	CORESTAT	corestat;
 
+const char* pccore_fontdir="./";
 
 /* ---- */
 
@@ -64,7 +65,7 @@ void pccore_initialize(void) {
 	sndctrl_initialize();
 	makescrn_initialize();
 
-	font_load(NULL, TRUE);
+	font_load(pccore_fontdir, TRUE);
 
 	crtc_initialize();
 	pcg_initialize();

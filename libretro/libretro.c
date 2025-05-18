@@ -104,6 +104,8 @@ int pre_main()
 	const AdvancedM3UMedia* fd1=(am3u_fd->slot_tbl[1]<0)?NULL:
 		&am3u_fd->changee_tbl[am3u_fd->slot_tbl[1]];
 
+	pccore_fontdir="/userdata/bios/xmil/";
+
    xmil_main(
 		fd0?fd0->readonly:false,
 		fd0?fd0->path:NULL,

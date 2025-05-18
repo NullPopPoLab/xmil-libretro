@@ -68,6 +68,8 @@ extern	XMILCFG		xmilcfg;
 extern	PCCORE		pccore;
 extern	CORESTAT	corestat;
 
+extern const char* pccore_fontdir;
+
 #if !defined(MAINFRAMES_OLD)
 void neitem_mainframes(NEVENTID id);
 #else

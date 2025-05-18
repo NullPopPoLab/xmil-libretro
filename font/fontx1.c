@@ -7,12 +7,12 @@
 
 static const OEMCHAR dot_tmp[] = OEMTEXT(".TMP");
 
-static FILEH fontopen(const OEMCHAR *path, const OEMCHAR *fontname) {
+static FILEH fontopen(const OEMCHAR *dir, const OEMCHAR *fontname) {
 
 	OEMCHAR	filename[MAX_PATH];
 	FILEH	ret;
 
-	file_cpyname(filename, path, NELEMENTS(filename));
+	file_cpyname(filename, dir, NELEMENTS(filename));
 	file_cutname(filename);
 	file_catname(filename, fontname, NELEMENTS(filename));
 	ret = file_open_rb(filename);
@@ -67,7 +67,7 @@ const UINT8	*p;
 	}
 }
 
-REG8 x1fontread(const OEMCHAR *path, REG8 loading) {
+REG8 x1fontread(const OEMCHAR *dir, REG8 loading) {
 
 	UINT8	*work;
 	FILEH	fh;
@@ -77,7 +77,7 @@ REG8 x1fontread(const OEMCHAR *path, REG8 loading) {
 		return(loading);
 	}
 	if (loading & FONT_ANK8) {
-		fh = fontopen(path, x1ank1name);
+		fh = fontopen(dir, x1ank1name);
 		if (fh != FILEH_INVALID) {
 			if (file_read(fh, work, 0x800) == 0x800) {
 				loading &= ~FONT_ANK8;
@@ -87,7 +87,7 @@ REG8 x1fontread(const OEMCHAR *path, REG8 loading) {
 		}
 	}
 	if (loading & FONTLOAD_ANK) {
-		fh = fontopen(path, x1ank2name);
+		fh = fontopen(dir, x1ank2name);
 		if (fh != FILEH_INVALID) {
 			if (file_read(fh, work, 4096) == 4096) {
 				if (loading & FONT_ANK16a) {
@@ -103,7 +103,7 @@ REG8 x1fontread(const OEMCHAR *path, REG8 loading) {
 		}
 	}
 	if (loading & (FONT_KNJ1 | FONT_KNJ2)) {
-		fh = fontopen(path, x1knjname);
+		fh = fontopen(dir, x1knjname);
 		if (fh != FILEH_INVALID) {
 			if (file_read(fh, work, 306176) == 306176) {
 				if (loading & FONT_KNJ1) {
