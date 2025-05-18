@@ -69,7 +69,7 @@ uint16_t videoBuffer[(SCREEN_PITCH / 2) * FULLSCREEN_HEIGHT];  //emu  surf
 
 #define MAX_DISK_IMAGES 100
 static char *images[MAX_DISK_IMAGES];
-static int cur_disk_idx, cur_disk_num;
+static int cur_disk_idx;
 
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
@@ -521,7 +521,6 @@ bool retro_load_game(const struct retro_game_info *info)
 
 		full_path = info->path;
 		images[0] = strdup(full_path);
-		cur_disk_num = full_path ? 1 : 0;
 	}
 
    log_printf("LOAD EMU\n");
@@ -582,7 +581,7 @@ size_t retro_get_memory_size(unsigned id)
 }
 
 bool set_eject_state(bool ejected) {
-  if (ejected || cur_disk_idx >= cur_disk_num) {
+  if (ejected || cur_disk_idx >= am3u_fd->changee_used) {
     fddfile_eject(0);
   } else {
     diskdrv_setfdd(0, images[cur_disk_idx], 0);
@@ -606,21 +605,21 @@ bool set_image_index(unsigned index) {
 }
 
 unsigned get_num_images(void) {
-    return cur_disk_num;
+    return am3u_fd->changee_used;
 }
 
 bool replace_image_index(unsigned index,
 			 const struct retro_game_info *info) {
-  if (index >= cur_disk_num)
+  if (index >= am3u_fd->changee_used)
     return 0;
   images[index] = strdup(info->path);
   return 1;
 }
 
 bool add_image_index(void) {
-  if (cur_disk_num >= MAX_DISK_IMAGES - 1)
+  if (am3u_fd->changee_used >= MAX_DISK_IMAGES - 1)
     return 0;
-  cur_disk_num++;
+  am3u_fd->changee_used++;
   return 1;
 }
 
