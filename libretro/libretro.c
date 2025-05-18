@@ -48,7 +48,6 @@ char slash = '/';
 #define SOUNDRATE 44100.0
 #define SNDSZ 735
 
-char RPATH[512];
 char RETRO_DIR[512];
 const char *retro_save_directory;
 const char *retro_system_directory;
@@ -524,8 +523,6 @@ bool retro_load_game(const struct retro_game_info *info)
 		images[0] = strdup(full_path);
 		cur_disk_num = full_path ? 1 : 0;
 	}
-
-   strcpy(RPATH,full_path);
 
    log_printf("LOAD EMU\n");
 
