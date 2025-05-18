@@ -33,6 +33,10 @@
 #include "fddfile.h"
 #include "z80core.h"
 
+#include "../mk5s/advanced_m3u.h"
+#include "../mk5s/quick_loader.h"
+#include "../mk5s/quick_path.h"
+
 #define CUSTOM_VERSION "+NC38"
 
 #ifdef _WIN32
@@ -44,7 +48,6 @@ char slash = '/';
 #define SOUNDRATE 44100.0
 #define SNDSZ 735
 
-char RPATH[512];
 char RETRO_DIR[512];
 const char *retro_save_directory;
 const char *retro_system_directory;
@@ -66,7 +69,7 @@ uint16_t videoBuffer[(SCREEN_PITCH / 2) * FULLSCREEN_HEIGHT];  //emu  surf
 
 #define MAX_DISK_IMAGES 100
 static char *images[MAX_DISK_IMAGES];
-static int cur_disk_idx, cur_disk_num;
+static int cur_disk_idx;
 
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
@@ -87,14 +90,27 @@ void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 static long framecount = 0;
 int allow_scanlines = 0;
 
+AdvancedM3U *am3u=NULL;
+AdvancedM3UDevice *am3u_fd=NULL;
+
 long GetTicks(void)
 {
   return (framecount * 100) / 6;
 }
 
-int pre_main(const char *floppy)
+int pre_main()
 {
-   xmil_main(floppy); 
+	const AdvancedM3UMedia* fd0=(am3u_fd->slot_tbl[0]<0)?NULL:
+		&am3u_fd->changee_tbl[am3u_fd->slot_tbl[0]];
+	const AdvancedM3UMedia* fd1=(am3u_fd->slot_tbl[1]<0)?NULL:
+		&am3u_fd->changee_tbl[am3u_fd->slot_tbl[1]];
+
+   xmil_main(
+		fd0?fd0->readonly:false,
+		fd0?fd0->path:NULL,
+		fd1?fd1->readonly:false,
+		fd1?fd1->path:NULL
+	); 
 
    return 0;
 }
@@ -364,7 +380,7 @@ void retro_get_system_info(struct retro_system_info *info)
    info->library_name = "x1";
    info->library_version = "0.60" CUSTOM_VERSION;
    info->need_fullpath = true;
-   info->valid_extensions = "dx1|zip|2d|2hd|tfd|d88|88d|hdm|xdf|dup|cmd";
+   info->valid_extensions = "dx1|zip|2d|2hd|tfd|d88|88d|hdm|xdf|dup|cmd|m3u";
 }
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
@@ -434,6 +450,36 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
     (void)code;
 }
 
+static bool am3u_error(void* user,int code,int lineloc,const QTextRef* line){
+
+   if (!log_cb) return true;
+
+	char* msg=qtext_alloc_q(line);
+
+	  log_cb(RETRO_LOG_ERROR,
+                      "M3U error %d in line %d: %s\n",
+                      code,lineloc,msg);
+	
+	qtext_free(&msg);
+
+	return true;
+}
+
+static bool load_m3u(const char *file)
+{
+	QLoaded* img=qload(file,false);
+	if(!img)return false;
+
+	QTextRef imgref;
+	qtext_ref_q(&imgref,(const char*)qloaded_bgn(img),img->readsize);
+	QTextRef m3udir;
+	qpath_dirname_c(&m3udir,file);
+	am3u_setup_q(am3u,&imgref,&m3udir,am3u_error,NULL);
+	qunload(&img);
+
+	return true;
+}
+
 bool retro_load_game(const struct retro_game_info *info)
 {
    const char *full_path;
@@ -446,13 +492,36 @@ bool retro_load_game(const struct retro_game_info *info)
 	   return false;
    }
 
+	cur_disk_idx = 0;
 
-   full_path = info->path;
-   images[0] = strdup(full_path);
-   cur_disk_idx = 0;
-   cur_disk_num = full_path ? 1 : 0;
+	am3u=am3u_new();
+	am3u_set_default_device(am3u,'F');
+	am3u_fd=am3u_get_device(am3u,'F');
+	am3u_device_set_changer(am3u_fd,MAX_DISK_IMAGES);
+	am3u_device_set_slots(am3u_fd,2);
 
-   strcpy(RPATH,full_path);
+	if (strstr(info->path, ".m3u") != NULL){
+		load_m3u(info->path);
+		
+		for(int i=0;i<am3u_fd->slot_max;++i){
+			if(am3u_fd->slot_tbl[i]<0)continue;
+			const AdvancedM3UMedia* media=&am3u_fd->changee_tbl[am3u_fd->slot_tbl[i]];
+			images[i] = strdup(media->path);
+
+			if (log_cb)
+				log_cb(RETRO_LOG_INFO, "FD%u: %s%s\n",i,media->path,media->readonly?" (readonly)":"");
+		}
+		full_path = images[0];
+	}
+	else
+	{
+		QTextRef qpath;
+		qtext_ref_c(&qpath,info->path);
+		am3u_device_add_media(am3u_fd,1,false,NULL,&qpath,NULL);
+
+		full_path = info->path;
+		images[0] = strdup(full_path);
+	}
 
    log_printf("LOAD EMU\n");
 
@@ -470,6 +539,9 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
 void retro_unload_game(void)
 {
      pauseg=0;
+
+	am3u_fd=NULL;
+	if(am3u)am3u_free(&am3u);
 }
 
 unsigned retro_get_region(void)
@@ -509,7 +581,7 @@ size_t retro_get_memory_size(unsigned id)
 }
 
 bool set_eject_state(bool ejected) {
-  if (ejected || cur_disk_idx >= cur_disk_num) {
+  if (ejected || cur_disk_idx >= am3u_fd->changee_used) {
     fddfile_eject(0);
   } else {
     diskdrv_setfdd(0, images[cur_disk_idx], 0);
@@ -533,21 +605,21 @@ bool set_image_index(unsigned index) {
 }
 
 unsigned get_num_images(void) {
-    return cur_disk_num;
+    return am3u_fd->changee_used;
 }
 
 bool replace_image_index(unsigned index,
 			 const struct retro_game_info *info) {
-  if (index >= cur_disk_num)
+  if (index >= am3u_fd->changee_used)
     return 0;
   images[index] = strdup(info->path);
   return 1;
 }
 
 bool add_image_index(void) {
-  if (cur_disk_num >= MAX_DISK_IMAGES - 1)
+  if (am3u_fd->changee_used >= MAX_DISK_IMAGES - 1)
     return 0;
-  cur_disk_num++;
+  am3u_fd->changee_used++;
   return 1;
 }
 
@@ -652,7 +724,7 @@ void retro_run(void)
    framecount++;
    if(firstcall)
    {
-      pre_main(RPATH);
+      pre_main();
       update_variables();
       mousemng_enable(MOUSEPROC_SYSTEM);
       firstcall=0;

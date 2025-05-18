@@ -10,6 +10,7 @@ INCFLAGS := -I$(CORE_DIR) \
 	-I$(XMIL_PATH)/fdd \
 	-I$(XMIL_PATH)/font \
 	-I$(XMIL_PATH)/io \
+	-I$(XMIL_PATH)/mk5s \
 	-I$(XMIL_PATH)/sound \
 	-I$(XMIL_PATH)/vram \
 	-I$(XMIL_PATH)/z80c \
@@ -39,6 +40,11 @@ SOURCES_C :=  \
 		$(XMIL_PATH)/vram/sdraw.c \
 		$(XMIL_PATH)/vram/sdrawq16.c \
 		$(XMIL_PATH)/vram/vram.c \
+		$(XMIL_PATH)/mk5s/advanced_m3u.c \
+		$(XMIL_PATH)/mk5s/quick_loader.c \
+		$(XMIL_PATH)/mk5s/quick_path.c \
+		$(XMIL_PATH)/mk5s/quick_text.c \
+		$(XMIL_PATH)/mk5s/safe_alloc.c \
 		$(wildcard $(XMIL_PATH)/z80c/*.c)
 
 #SOURCES_CXX := 
