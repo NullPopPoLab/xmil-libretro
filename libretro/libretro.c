@@ -67,6 +67,12 @@ signed short soundbuf[1024*2];
 
 uint16_t videoBuffer[(SCREEN_PITCH / 2) * FULLSCREEN_HEIGHT];  //emu  surf
 
+#define MAX_PADS 2
+unsigned input_devices[MAX_PADS]={
+	RETRO_DEVICE_JOYPAD,
+	RETRO_DEVICE_JOYPAD
+};
+
 #define MAX_DISK_IMAGES 100
 static int cur_disk_idx;
 
@@ -443,8 +449,7 @@ void update_geometry(void)
 
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
-    (void)port;
-    (void)device;
+	if(port<MAX_PADS)input_devices[port] = device;
 }
 
 #define SERIAL_SIZE 265000
