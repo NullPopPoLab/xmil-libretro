@@ -139,6 +139,18 @@ void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
 
+   static const struct retro_controller_description port[] = {
+      { "RetroPad",              RETRO_DEVICE_JOYPAD },
+      { "RetroKeyboard",         RETRO_DEVICE_KEYBOARD },
+      { 0 },
+   };
+
+   static const struct retro_controller_info ports[] = {
+      { port, 2 },
+      { port, 2 },
+      { NULL, 0 },
+   };
+
    struct retro_variable variables[] = {
       { "x1_resolute" , "Resolution; LOW|HIGH" },
       { "x1_bootmedia" , "Boot media; 2HD|2D" },
@@ -164,6 +176,7 @@ void retro_set_environment(retro_environment_t cb)
       { NULL, NULL },
    };
 
+   cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 
    struct retro_vfs_interface_info vfs_interface_info;
