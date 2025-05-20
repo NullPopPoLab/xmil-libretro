@@ -354,6 +354,27 @@ void update_input(void)
    		for(i=0;i<RETROK_LAST;i++)
       			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
 
+   		if(Core_Key_Sate[RETROK_KP789]){
+   		    if(Core_Key_Sate[RETROK_KP369] && !Core_Key_Sate[RETROK_KP147])Core_Key_Sate[RETROK_KP9]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP147] && !Core_Key_Sate[RETROK_KP369])Core_Key_Sate[RETROK_KP7]=0x80;
+   		    else Core_Key_Sate[RETROK_KP8]=0x80;
+   		}
+   		if(Core_Key_Sate[RETROK_KP123]){
+   		    if(Core_Key_Sate[RETROK_KP369] && !Core_Key_Sate[RETROK_KP147])Core_Key_Sate[RETROK_KP3]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP147] && !Core_Key_Sate[RETROK_KP369])Core_Key_Sate[RETROK_KP1]=0x80;
+   		    else Core_Key_Sate[RETROK_KP2]=0x80;
+   		}
+   		if(Core_Key_Sate[RETROK_KP147]){
+   		    if(Core_Key_Sate[RETROK_KP789] && !Core_Key_Sate[RETROK_KP123])Core_Key_Sate[RETROK_KP7]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP123] && !Core_Key_Sate[RETROK_KP789])Core_Key_Sate[RETROK_KP1]=0x80;
+   		    else Core_Key_Sate[RETROK_KP4]=0x80;
+   		}
+   		if(Core_Key_Sate[RETROK_KP369]){
+   		    if(Core_Key_Sate[RETROK_KP789] && !Core_Key_Sate[RETROK_KP123])Core_Key_Sate[RETROK_KP9]=0x80;
+   		    else if(Core_Key_Sate[RETROK_KP123] && !Core_Key_Sate[RETROK_KP789])Core_Key_Sate[RETROK_KP3]=0x80;
+   		    else Core_Key_Sate[RETROK_KP6]=0x80;
+   		}
+
    		if(memcmp( Core_Key_Sate,Core_old_Key_Sate , sizeof(Core_Key_Sate) ) )
 			for(i=0;i<RETROK_LAST;i++){
 				KEYP(i,i);
