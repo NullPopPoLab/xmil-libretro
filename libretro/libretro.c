@@ -73,6 +73,7 @@ unsigned input_devices[MAX_PADS]={
 	RETRO_DEVICE_JOYPAD
 };
 
+#define MAX_DISK_DRIVES 4
 #define MAX_DISK_IMAGES 100
 static int cur_disk_idx;
 
@@ -536,7 +537,7 @@ bool retro_load_game(const struct retro_game_info *info)
 	am3u_set_default_device(am3u,'F');
 	am3u_fd=am3u_get_device(am3u,'F');
 	am3u_device_set_changer(am3u_fd,MAX_DISK_IMAGES);
-	am3u_device_set_slots(am3u_fd,2);
+	am3u_device_set_slots(am3u_fd,MAX_DISK_DRIVES);
 
 	if (strstr(info->path, ".m3u") != NULL){
 		load_m3u(info->path);
@@ -613,23 +614,23 @@ size_t retro_get_memory_size(unsigned id)
     return 0;
 }
 
-bool set_eject_state(bool ejected) {
+bool set_drive_eject_state(unsigned drive,bool ejected) {
   if (ejected || cur_disk_idx >= am3u_fd->changee_used) {
-    fddfile_eject(0);
+    fddfile_eject(drive);
   } else {
-	am3u_fd->slot_tbl[0]=cur_disk_idx;
-	const AdvancedM3UMedia* fd0=(am3u_fd->slot_tbl[0]<0)?NULL:
-		&am3u_fd->changee_tbl[am3u_fd->slot_tbl[0]];
+	am3u_fd->slot_tbl[drive]=cur_disk_idx;
+	const AdvancedM3UMedia* fd=(am3u_fd->slot_tbl[drive]<0)?NULL:
+		&am3u_fd->changee_tbl[am3u_fd->slot_tbl[drive]];
 
-    diskdrv_setfdd(0, fd0?fd0->path:NULL, fd0?fd0->readonly:false);
+    diskdrv_setfdd(drive, fd?fd->path:NULL, fd?fd->readonly:false);
   }
   return 1;
 }
 
 /* TODO: support FDD 1. */
 
-bool get_eject_state (void) {
-  return !fddfile_diskready(0);
+bool get_drive_eject_state (unsigned drive) {
+  return !fddfile_diskready(drive);
 }
 
 unsigned get_image_index (void) {
@@ -643,6 +644,10 @@ bool set_image_index(unsigned index) {
 
 unsigned get_num_images(void) {
     return am3u_fd->changee_used;
+}
+
+unsigned get_num_drives(void) {
+    return MAX_DISK_DRIVES;
 }
 
 bool replace_image_index(unsigned index,
@@ -669,15 +674,54 @@ bool add_image_index(void) {
   return 1;
 }
 
-struct retro_disk_control_callback disk_controller =
+static bool disk_get_image_path(unsigned index, char *path, size_t len)
+{
+   if (len < 1)
+      return false;
+   if (index >= am3u_fd->changee_used)
+      return false;
+
+	const AdvancedM3UMedia* fd=&am3u_fd->changee_tbl[index];
+	if(!fd->ready)return false;
+
+	strncpy(path, fd->path, len);
+	return true;
+}
+
+static bool disk_get_image_label(unsigned index, char *label, size_t len)
+{
+   if (len < 1)
+      return false;
+   if (index >= am3u_fd->changee_used)
+      return false;
+
+	const AdvancedM3UMedia* fd=&am3u_fd->changee_tbl[index];
+	if(!fd->ready)return false;
+
+	strncpy(label, fd->label, len);
+	return true;
+}
+
+static int disk_get_drive_image_index(unsigned drive)
+{
+	if(drive>=get_num_drives())return -1;
+	if(get_drive_eject_state(drive))return -1;
+	return am3u_fd->slot_tbl[drive];	
+}
+
+struct retro_disk_control_ext2_callback disk_controller =
   {
-   .set_eject_state = set_eject_state,
-   .get_eject_state = get_eject_state,
+   .set_drive_eject_state = set_drive_eject_state,
+   .get_drive_eject_state = get_drive_eject_state,
+   .get_num_drives = get_num_drives,
    .get_image_index = get_image_index,
    .set_image_index = set_image_index,
    .get_num_images = get_num_images,
    .replace_image_index = replace_image_index,
-   .add_image_index = add_image_index
+   .add_image_index = add_image_index,
+   .get_image_path = disk_get_image_path,
+   .get_image_label = disk_get_image_label,
+   .get_drive_image_index = disk_get_drive_image_index
 };
 
 void retro_init(void)
@@ -745,7 +789,7 @@ void retro_init(void)
     struct retro_keyboard_callback cbk = { keyboard_cb };
     environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cbk);
 */
-	environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &disk_controller);
+	environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT2_INTERFACE, &disk_controller);
   	update_variables();
 
     memset(Core_Key_Sate,0,sizeof(Core_Key_Sate));
