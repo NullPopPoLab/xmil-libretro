@@ -54,8 +54,8 @@ const char *retro_system_directory;
 const char *retro_content_directory;
 char retro_system_conf[512];
 
-char Core_Key_Sate[512];
-char Core_old_Key_Sate[512];
+char Core_Key_Sate[RETROK_LAST];
+char Core_old_Key_Sate[RETROK_LAST];
 
 int retrow=FULLSCREEN_WIDTH;
 int retroh=FULLSCREEN_HEIGHT;
@@ -351,11 +351,11 @@ void update_input(void)
 
 
 
-   		for(i=0;i<320;i++)
+   		for(i=0;i<RETROK_LAST;i++)
       			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
 
    		if(memcmp( Core_Key_Sate,Core_old_Key_Sate , sizeof(Core_Key_Sate) ) )
-			for(i=0;i<320;i++){
+			for(i=0;i<RETROK_LAST;i++){
 				KEYP(i,i);
 			}
 
@@ -706,7 +706,7 @@ void retro_init(void)
 	environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &disk_controller);
   	update_variables();
 
-    memset(Core_Key_Sate,0,512);
+    memset(Core_Key_Sate,0,sizeof(Core_Key_Sate));
     memset(Core_old_Key_Sate ,0, sizeof(Core_old_Key_Sate));
 }
 
