@@ -512,71 +512,59 @@ enum retro_key
    RETROK_LAUNCH_APP1       = 340,
    RETROK_LAUNCH_APP2       = 341,
 
-   // Japanese PC keys 
-   RETROK_ROMAN          = 392,
-   RETROK_KATAKANA       = 393,
-   RETROK_HIRAGANA       = 394,
-   RETROK_KATAHIRA       = 395,
-   RETROK_ZENHAN         = 396,
-   RETROK_CONVERT        = 397,
-   RETROK_DONTCONV       = 398,
-   RETROK_YEN            = 399,
+   // More Media Keys 
+   RETROK_CALC              = 356,
+   RETROK_SLEEP             = 357,
 
-   // Legacy PC extra 
-   RETROK_RESET          = 400,
-   RETROK_NMI            = 401, /* for X1,X68 */
-   RETROK_COPY           = 402, /* for PC98,X68 */
-   RETROK_CODE           = 403, /* for X68 */
-   RETROK_REGISTER       = 404, /* for X68,FMTowns */
-   RETROK_SYMBOL         = 405, /* for X68 */
-   RETROK_KP_COMMA       = 406, /* for PC88,PC98,X68 */
-   RETROK_KP000          = 407, /* for FMTowns */
-   RETROK_F16            = 408, /* for FMTowns */
-   RETROK_F17            = 409, /* for FMTowns */
-   RETROK_F18            = 410, /* for FMTowns */
-   RETROK_F19            = 411, /* for FMTowns */
-   RETROK_F20            = 412, /* for FMTowns */
-   RETROK_DICT           = 413, /* for FMTowns */
-   RETROK_REMOVE         = 414, /* for FMTowns */
+   // Japanese PC keys 
+   RETROK_ROMAN          = 358,
+   RETROK_KATAKANA       = 359,
+   RETROK_HIRAGANA       = 360,
+   RETROK_KATAHIRA       = 361,
+   RETROK_ZENHAN         = 362,
+   RETROK_CONVERT        = 363,
+   RETROK_DONTCONV       = 364,
+   RETROK_YEN            = 365,
+   RETROK_KP_COMMA       = 366,
 
    // for 8 directional Joy2NumPad 
-   RETROK_KP789          = 467,
-   RETROK_KP123          = 468,
-   RETROK_KP147          = 469,
-   RETROK_KP369          = 470,
+   RETROK_KP789          = 367,
+   RETROK_KP123          = 368,
+   RETROK_KP147          = 369,
+   RETROK_KP369          = 370,
 
    // JoyPad via RetroKeyboard 
-   RETROK_JOYPAD_UP      = 471,
-   RETROK_JOYPAD_DOWN    = 472,
-   RETROK_JOYPAD_LEFT    = 473,
-   RETROK_JOYPAD_RIGHT   = 474,
-   RETROK_JOYPAD_1       = 475,
-   RETROK_JOYPAD_2       = 476,
-   RETROK_JOYPAD_3       = 477,
-   RETROK_JOYPAD_4       = 478,
-   RETROK_JOYPAD_5       = 479,
-   RETROK_JOYPAD_6       = 480,
-   RETROK_JOYPAD_7       = 481,
-   RETROK_JOYPAD_8       = 482,
-   RETROK_JOYPAD_9       = 483,
-   RETROK_JOYPAD_10      = 484,
-   RETROK_JOYPAD_11      = 485,
-   RETROK_JOYPAD_12      = 486,
-   RETROK_JOYPAD_13      = 487,
-   RETROK_JOYPAD_14      = 488,
-   RETROK_JOYPAD_15      = 489,
-   RETROK_JOYPAD_16      = 490,
+   RETROK_JOYPAD_UP      = 371,
+   RETROK_JOYPAD_DOWN    = 372,
+   RETROK_JOYPAD_LEFT    = 373,
+   RETROK_JOYPAD_RIGHT   = 374,
+   RETROK_JOYPAD_1       = 375,
+   RETROK_JOYPAD_2       = 376,
+   RETROK_JOYPAD_3       = 377,
+   RETROK_JOYPAD_4       = 378,
+   RETROK_JOYPAD_5       = 379,
+   RETROK_JOYPAD_6       = 380,
+   RETROK_JOYPAD_7       = 381,
+   RETROK_JOYPAD_8       = 382,
+   RETROK_JOYPAD_9       = 383,
+   RETROK_JOYPAD_10      = 384,
+   RETROK_JOYPAD_11      = 385,
+   RETROK_JOYPAD_12      = 386,
+   RETROK_JOYPAD_13      = 387,
+   RETROK_JOYPAD_14      = 388,
+   RETROK_JOYPAD_15      = 389,
+   RETROK_JOYPAD_16      = 390,
 
    // Mouse Button via RetroKeyboard 
-   RETROK_MOUSE_1        = 491,
-   RETROK_MOUSE_2        = 492,
-   RETROK_MOUSE_3        = 493,
-   RETROK_MOUSE_4        = 494,
-   RETROK_MOUSE_5        = 495,
-   RETROK_MOUSE_6        = 496,
-   RETROK_MOUSE_7        = 497,
-   RETROK_MOUSE_8        = 498,
-   RETROK_MOUSE_9        = 499,
+   RETROK_MOUSE_1        = 391,
+   RETROK_MOUSE_2        = 392,
+   RETROK_MOUSE_3        = 393,
+   RETROK_MOUSE_4        = 394,
+   RETROK_MOUSE_5        = 395,
+   RETROK_MOUSE_6        = 396,
+   RETROK_MOUSE_7        = 397,
+   RETROK_MOUSE_8        = 398,
+   RETROK_MOUSE_9        = 399,
 
    RETROK_LAST,
 
