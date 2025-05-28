@@ -493,52 +493,90 @@ enum retro_key
    RETROK_UNDO           = 322,
    RETROK_OEM_102        = 323,
 
-   RETROK_CANCEL         = 324, /* for MSX */
-   RETROK_EXEC           = 325, /* for MSX,PC88 */
-   RETROK_CODE           = 326, /* for X68 */
-   RETROK_CONVERT        = 327, /* for PC88 */
-   RETROK_PC             = 328, /* for PC88 */
-   RETROK_KANA           = 329, /* for MSX,PC98,X68 */
-   RETROK_KP_COMMA       = 330, /* for PC98,X68 */
-   RETROK_ROMAN          = 331, /* for X68 */
-   RETROK_COPY           = 332, /* for X68 */
-   RETROK_HIRAGANA       = 333, /* for X68 */
-   RETROK_ZENKAKU        = 334, /* for X68 */
-   RETROK_NMI            = 335, /* for X1,X68 */
-   RETROK_F16            = 336, /* for FMTowns */
-   RETROK_F17            = 337, /* for FMTowns */
-   RETROK_F18            = 338, /* for FMTowns */
-   RETROK_F19            = 339, /* for FMTowns */
-   RETROK_F20            = 340, /* for FMTowns */
-   RETROK_KP000          = 341, /* for FMTowns */
-   RETROK_DICT           = 342, /* for FMTowns */
-   RETROK_REGISTER       = 343, /* for X68,FMTowns */
-   RETROK_REMOVE         = 344, /* for FMTowns */
-   RETROK_SYMBOL         = 345, /* for X68 */
+   RETROK_BROWSER_BACK      = 324,
+   RETROK_BROWSER_FORWARD   = 325,
+   RETROK_BROWSER_REFRESH   = 326,
+   RETROK_BROWSER_STOP      = 327,
+   RETROK_BROWSER_SEARCH    = 328,
+   RETROK_BROWSER_FAVORITES = 329,
+   RETROK_BROWSER_HOME      = 330,
+   RETROK_VOLUME_MUTE       = 331,
+   RETROK_VOLUME_DOWN       = 332,
+   RETROK_VOLUME_UP         = 333,
+   RETROK_MEDIA_NEXT        = 334,
+   RETROK_MEDIA_PREV        = 335,
+   RETROK_MEDIA_STOP        = 336,
+   RETROK_MEDIA_PLAY_PAUSE  = 337,
+   RETROK_LAUNCH_MAIL       = 338,
+   RETROK_LAUNCH_MEDIA      = 339,
+   RETROK_LAUNCH_APP1       = 340,
+   RETROK_LAUNCH_APP2       = 341,
 
-   RETROK_KP789          = 376, /* for Joy2NumPad */
-   RETROK_KP123          = 377, /* for Joy2NumPad */
-   RETROK_KP147          = 378, /* for Joy2NumPad */
-   RETROK_KP369          = 379, /* for Joy2NumPad */
+   // Japanese PC keys 
+   RETROK_ROMAN          = 392,
+   RETROK_KATAKANA       = 393,
+   RETROK_HIRAGANA       = 394,
+   RETROK_KATAHIRA       = 395,
+   RETROK_ZENHAN         = 396,
+   RETROK_CONVERT        = 397,
+   RETROK_DONTCONV       = 398,
+   RETROK_YEN            = 399,
 
-   RETROK_JOYPAD_UP      = 380,
-   RETROK_JOYPAD_DOWN    = 381,
-   RETROK_JOYPAD_LEFT    = 382,
-   RETROK_JOYPAD_RIGHT   = 383,
-   RETROK_JOYPAD_1       = 384,
-   RETROK_JOYPAD_2       = 385,
-   RETROK_JOYPAD_3       = 386,
-   RETROK_JOYPAD_4       = 387,
-   RETROK_JOYPAD_5       = 388,
-   RETROK_JOYPAD_6       = 389,
-   RETROK_JOYPAD_7       = 390,
-   RETROK_JOYPAD_8       = 391,
+   // Legacy PC extra 
+   RETROK_RESET          = 400,
+   RETROK_NMI            = 401, /* for X1,X68 */
+   RETROK_COPY           = 402, /* for PC98,X68 */
+   RETROK_CODE           = 403, /* for X68 */
+   RETROK_REGISTER       = 404, /* for X68,FMTowns */
+   RETROK_SYMBOL         = 405, /* for X68 */
+   RETROK_KP_COMMA       = 406, /* for PC88,PC98,X68 */
+   RETROK_KP000          = 407, /* for FMTowns */
+   RETROK_F16            = 408, /* for FMTowns */
+   RETROK_F17            = 409, /* for FMTowns */
+   RETROK_F18            = 410, /* for FMTowns */
+   RETROK_F19            = 411, /* for FMTowns */
+   RETROK_F20            = 412, /* for FMTowns */
+   RETROK_DICT           = 413, /* for FMTowns */
+   RETROK_REMOVE         = 414, /* for FMTowns */
 
-   RETROK_MOUSE_1        = 395,
-   RETROK_MOUSE_2        = 396,
-   RETROK_MOUSE_3        = 397,
-   RETROK_MOUSE_4        = 398,
-   RETROK_MOUSE_5        = 399,
+   // for 8 directional Joy2NumPad 
+   RETROK_KP789          = 467,
+   RETROK_KP123          = 468,
+   RETROK_KP147          = 469,
+   RETROK_KP369          = 470,
+
+   // JoyPad via RetroKeyboard 
+   RETROK_JOYPAD_UP      = 471,
+   RETROK_JOYPAD_DOWN    = 472,
+   RETROK_JOYPAD_LEFT    = 473,
+   RETROK_JOYPAD_RIGHT   = 474,
+   RETROK_JOYPAD_1       = 475,
+   RETROK_JOYPAD_2       = 476,
+   RETROK_JOYPAD_3       = 477,
+   RETROK_JOYPAD_4       = 478,
+   RETROK_JOYPAD_5       = 479,
+   RETROK_JOYPAD_6       = 480,
+   RETROK_JOYPAD_7       = 481,
+   RETROK_JOYPAD_8       = 482,
+   RETROK_JOYPAD_9       = 483,
+   RETROK_JOYPAD_10      = 484,
+   RETROK_JOYPAD_11      = 485,
+   RETROK_JOYPAD_12      = 486,
+   RETROK_JOYPAD_13      = 487,
+   RETROK_JOYPAD_14      = 488,
+   RETROK_JOYPAD_15      = 489,
+   RETROK_JOYPAD_16      = 490,
+
+   // Mouse Button via RetroKeyboard 
+   RETROK_MOUSE_1        = 491,
+   RETROK_MOUSE_2        = 492,
+   RETROK_MOUSE_3        = 493,
+   RETROK_MOUSE_4        = 494,
+   RETROK_MOUSE_5        = 495,
+   RETROK_MOUSE_6        = 496,
+   RETROK_MOUSE_7        = 497,
+   RETROK_MOUSE_8        = 498,
+   RETROK_MOUSE_9        = 499,
 
    RETROK_LAST,
 
